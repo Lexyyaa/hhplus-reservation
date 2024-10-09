@@ -1,6 +1,6 @@
 # 콘서트 예약 서비스
 --
-* 마일스톤 
+* [마일스톤](https://github.com/users/Lexyyaa/projects/1) 
 * 시퀀스 다이어그램 
 * API 명세서 
 * ERD
