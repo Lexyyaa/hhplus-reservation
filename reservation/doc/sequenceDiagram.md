@@ -124,7 +124,7 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant 사용자 as 사용자
+    actor 사용자 as 사용자
     participant 결제 as 결제
     participant 대기열 as 대기열
     participant 포인트 as 포인트
