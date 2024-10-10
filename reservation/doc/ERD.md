@@ -13,9 +13,9 @@ erDiagram
         int id PK 
         int user_id FK
         varchar token "대기열 토큰"
-        varchar status "진행 상태(WAITING, PROGRESS, DONE)"
+        varchar status "진행 상태(WAITING, PROGRESS)"
         LocalDateTime created_at "토큰 생성 시간"
-        LocalDateTime expired_at "토큰 만료 시간"
+        LocalDateTime completed_at "작업 완료 시간"
     }
 
     CONCERT {
