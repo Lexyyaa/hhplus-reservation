@@ -28,8 +28,8 @@ erDiagram
         int concert_Id FK 
         LocalDate performa_date "콘서트 일자"
         int total_seat "전체 좌석 수"
-        int reservation_seat "남은 좌석 수"
-        varchar is_reservation_status "예약 가능 여부(AVAILABLE, UNAVAILABLE)"
+        int available_seat "남은 좌석 수"
+        varchar available_status "예약 가능 여부(AVAILABLE, UNAVAILABLE)"
     }
 
     CONCERT_SEAT {
