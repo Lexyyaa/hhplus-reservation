@@ -28,5 +28,5 @@
         /payment
 ```
 * [API 명세서](https://frequent-mustang-de9.notion.site/11bac8e29e2880a786a8ddcdad7ac7b4?v=11bac8e29e2881edbcce000c22c21ab1) 
-* ERD
+* [ERD](https://github.com/Lexyyaa/hhplus-reservation/blob/docs/reservation/doc/ERD.md)
 
