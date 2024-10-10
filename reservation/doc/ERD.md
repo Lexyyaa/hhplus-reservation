@@ -13,6 +13,7 @@ erDiagram
         int id PK 
         int user_id FK
         varchar token "대기열 토큰"
+        int wait_num "대기 순번"
         varchar status "진행 상태(WAITING, PROGRESS)"
         LocalDateTime created_at "토큰 생성 일시"
         LocalDateTime completed_at "작업 완료 일시"
