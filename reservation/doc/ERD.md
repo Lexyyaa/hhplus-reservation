@@ -14,8 +14,8 @@ erDiagram
         int user_id FK
         varchar token "대기열 토큰"
         varchar status "진행 상태(WAITING, PROGRESS)"
-        LocalDateTime created_at "토큰 생성 시간"
-        LocalDateTime completed_at "작업 완료 시간"
+        LocalDateTime created_at "토큰 생성 일시"
+        LocalDateTime completed_at "작업 완료 일시"
     }
 
     CONCERT {
@@ -26,7 +26,7 @@ erDiagram
     CONCERT_DETAIL {
         int id PK
         int concert_Id FK 
-        LocalDate performa_date "콘서트 일자"
+        LocalDate performa_date "공연일자"
         int total_seat "전체 좌석 수"
         int available_seat "남은 좌석 수"
         varchar available_status "예약 가능 여부(AVAILABLE, UNAVAILABLE)"
@@ -44,8 +44,8 @@ erDiagram
         int id PK
         int user_id FK
         int concert_detail_id FK
-        varchar concert_title "콘서트 제목"
-        LocalDate perform_date "콘서트 일자"
+        varchar concert_title "공연 제목"
+        LocalDate perform_date "공연 일자"
         int total_price "예약 금액"
         varchar is_confirmed "예약 확정 여부(NOT_CONFIEMD, CONFIRMED)"
         LocalDateTime reserve_request_at "예약 신청 일시"
