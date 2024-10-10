@@ -21,6 +21,11 @@ erDiagram
     CONCERT {
         int id PK
         varchar title "콘서트 제목"
+    }
+
+    CONCERT_DETAIL {
+        int id PK
+        int concert_Id FK 
         LocalDate performa_date "콘서트 일자"
         int total_seat "전체 좌석 수"
         int reservation_seat "남은 좌석 수"
@@ -29,7 +34,7 @@ erDiagram
 
     CONCERT_SEAT {
         int id PK
-        int concert_id FK
+        int concert_detail_id FK
         int seat_type "좌석 타입"
         int seat_price "좌석 금액"
         int seat_num "좌석 번호"
@@ -38,9 +43,9 @@ erDiagram
     RESERVATION {
         int id PK
         int user_id FK
-        int concert_id FK
+        int concert_detail_id FK
         varchar concert_title "콘서트 제목"
-        LocalDate Performa_date "콘서트 일자"
+        LocalDate perform_date "콘서트 일자"
         int total_price "예약 금액"
         varchar is_confirmed "예약 확정 여부(NOT_CONFIEMD, CONFIRMED)"
         LocalDateTime reserve_request_at "예약 신청 일시"
@@ -64,12 +69,8 @@ erDiagram
 
     RESERVATION ||--o{ RESERVATION_DETAIL: "has details"
     RESERVATION ||--|| PAYMENT: "is paid"
-
-
-    USERS ||--o{ USER_QUEUE: "made queue"
     USERS ||--o{ PAYMENT: "made payment"
-
-
-    CONCERT ||--o{ CONCERT_SEAT: "has seats"
-    CONCERT ||--o{ RESERVATION: "made reservation"
+    CONCERT ||--o{ CONCERT_DETAIL: "has details"
+    CONCERT_DETAIL ||--o{ CONCERT_SEAT: "has seats"
+    CONCERT_DETAIL ||--o{ RESERVATION: "made reservation"
 ```
