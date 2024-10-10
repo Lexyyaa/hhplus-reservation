@@ -35,7 +35,7 @@ erDiagram
     CONCERT_SEAT {
         int id PK
         int concert_detail_id FK
-        int seat_num "좌석 번호"
+        varchar seat_num "좌석 번호"
         int seat_type "좌석 타입"
         int seat_price "좌석 금액"
     }
