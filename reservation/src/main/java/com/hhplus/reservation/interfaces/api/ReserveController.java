@@ -1,77 +1,47 @@
 package com.hhplus.reservation.interfaces.api;
 
-import com.hhplus.reservation.domain.concert.ConcertSeatType;
-import com.hhplus.reservation.domain.reserve.ReservationType;
+import com.hhplus.reservation.application.usecase.ReservationUsecase;
 import com.hhplus.reservation.interfaces.dto.reserve.ReserveResponse;
 import com.hhplus.reservation.interfaces.dto.reserve.ReserveSeatRequest;
-import org.springframework.http.ResponseEntity;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
 
 @RestController
 @RequestMapping("/api/reserve")
+@RequiredArgsConstructor
+@Tag(name = "Reservation", description = "예약 API")
 public class ReserveController {
 
-    // Mock 대기열 (유효한 토큰 저장)
-    public static Queue<String> waitingQueue = new LinkedList<>();
+    private final ReservationUsecase reservationUsecase;
 
-    static {
-        // 미리 대기열에 토큰 추가
-        waitingQueue.add("MTA6ZGM0ZDU0NDYtNDg5NC00NzgzLWFmMmYtODZiYjUwNDgxOTdh");
-    }
-
-    // 좌석예약 API
-    @PostMapping("{concertDetailId}/seat")
-    public ResponseEntity<ReserveResponse> reserveSeat(
+    @Operation(summary = "좌석 예약", description = "사용자가 좌석을 예약합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "예약 성공"),
+            @ApiResponse(responseCode = "404", description = "예약 내역이 존재하지 않습니다."),
+            @ApiResponse(responseCode = "400", description = "예약이 만료되었습니다."),
+            @ApiResponse(responseCode = "409", description = "다른 사용자가 예약 중입니다.")
+    })
+    @PostMapping("{concertScheduleId}/seat/{userId}")
+    public ReserveResponse reserveSeat(
             @RequestHeader("Authorization") String queueToken,
-            @PathVariable("concertDetailId") Long concertDetailId,
-            @RequestBody ReserveSeatRequest reserveSeatRequest
+            @PathVariable("concertScheduleId") Long concertScheduleId,
+            @PathVariable("userId") Long userId,
+            @RequestBody ReserveSeatRequest seatsRequest
     ) {
-
-        validateToken(queueToken);
-
-        ReserveSeatRequest mockRequest = new ReserveSeatRequest();
-        List<ReserveSeatRequest.ReserveSeat> seatList = List.of(
-                new ReserveSeatRequest.ReserveSeat(concertDetailId,"S1", ConcertSeatType.S,150000L),
-                new ReserveSeatRequest.ReserveSeat(concertDetailId,"R1", ConcertSeatType.R,100000L),
-                new ReserveSeatRequest.ReserveSeat(concertDetailId,"A1", ConcertSeatType.A,50000L),
-                new ReserveSeatRequest.ReserveSeat(concertDetailId,"A2", ConcertSeatType.A,50000L)
-        );
-        mockRequest.setSeatList(seatList);
-        mockRequest.setUserId(10L);
-
-        ReserveResponse reserveResponse = getMockReserveInfo(mockRequest);
-
-        return ResponseEntity.ok().body(reserveResponse);
-    }
-
-    // Stub
-    private ReserveResponse getMockReserveInfo(ReserveSeatRequest mockRequest){
-
-        ReserveResponse mockResponcse = new ReserveResponse(
-                5L,
-                10L,
-                10L,
-                "흠뻑쇼",
-                LocalDate.parse("2025-08-08"),
-                250000L,
-                ReservationType.NOT_CONFIRMED,
-                LocalDateTime.now(),
-                null);
-        return mockResponcse;
-    }
-
-    private void validateToken(String queueToken) {
-        if (queueToken == null || !waitingQueue.contains(queueToken)) {
-            throw new IllegalArgumentException("유효하지 않은 접근입니다.");
-        }
+        return reservationUsecase.reserve(concertScheduleId,userId,queueToken,seatsRequest);
     }
 }
+
+
+
+
+
+
+
 
 
 
