@@ -1,6 +1,6 @@
 # 시퀀스 다이어그램 
 
-### 1. 유저 대기열 토큰 기능
+### 1. 유저 대기열 토큰 발급 및 조회 기능
 ```mermaid
 sequenceDiagram
     actor 사용자 as 사용자
