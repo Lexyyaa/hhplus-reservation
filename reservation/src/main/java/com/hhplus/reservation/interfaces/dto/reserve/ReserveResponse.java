@@ -1,21 +1,26 @@
 package com.hhplus.reservation.interfaces.dto.reserve;
 
 import com.hhplus.reservation.domain.reserve.ReservationType;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReserveResponse {
     Long id;
     Long userId;
-    Long concertScheduleId;
+    Long concertDetailId;
+    String concertTitle;
+    LocalDate performDate;
     Long totalPrice;
-    ReservationType reserved;
+    ReservationType isConfirmed;
     LocalDateTime reserveRequestAt;
-    LocalDateTime reserveExpiredAt;
+    LocalDateTime reserveConfirmAt;
 }
