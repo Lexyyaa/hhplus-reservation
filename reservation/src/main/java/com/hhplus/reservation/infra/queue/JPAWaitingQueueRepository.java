@@ -12,16 +12,18 @@ import java.util.List;
 import java.util.Optional;
 
 public interface JPAWaitingQueueRepository extends JpaRepository<WaitingQueue, Long> {
-    @Query("SELECT wq FROM WaitingQueue wq WHERE wq.userId = :userId AND wq.expiredAt IS NOT NULL AND wq.deletedAt IS NOT NULL")
-    Optional<WaitingQueue> findWaitingQueue(@Param("userId") Long userId);
 
-    WaitingQueue save(WaitingQueue queueToken);
+    @Query("SELECT wq FROM WaitingQueue wq WHERE wq.userId = :userId AND wq.status = :status")
+    Optional<WaitingQueue> findWaitingQueue(@Param("userId") Long userId, @Param("status") WaitingQueueStatus status);
 
-    @Query("SELECT COUNT(wq) + 1 FROM WaitingQueue wq WHERE wq.createdAt < :createdAt AND wq.status = 'WAITING' ")
+    @Query("SELECT wq FROM WaitingQueue wq WHERE wq.userId = :userId AND wq.token = :token AND wq.status = 'WAITING'")
+    Optional<WaitingQueue> findWaitingQueue(@Param("userId") Long userId,@Param("token") String token);
+
+    @Query("SELECT COUNT(wq) + 1 FROM WaitingQueue wq " +
+            "WHERE wq.createdAt < :createdAt AND wq.status = 'WAITING' ")
     Long findMyWaitNum(@Param("createdAt") LocalDateTime createdAt);
 
-    @Query("SELECT wq FROM WaitingQueue wq WHERE wq.userId = :userId AND wq.token = :token AND wq.status = 'WAITING' AND (wq.expiredAt IS NOT NULL OR wq.deletedAt IS NOT NULL)")
-    Optional<WaitingQueue> findWaitingQueue(@Param("userId") Long userId,@Param("token") String token);
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Modifying
     @Query("UPDATE WaitingQueue wq SET wq.deletedAt = :currTime WHERE wq.token < :token ")
@@ -33,7 +35,7 @@ public interface JPAWaitingQueueRepository extends JpaRepository<WaitingQueue, L
     @Query("SELECT COUNT(wq) FROM WaitingQueue wq WHERE wq.status = 'PROGRESS'")
     Long countProgressTokens();
 
-    @Query("SELECT wq FROM WaitingQueue wq WHERE wq.status = 'WATING' ORDER BY wq.createdAt ASC LIMIT 5")
+    @Query("SELECT wq FROM WaitingQueue wq WHERE wq.status = 'WAITING' ORDER BY wq.createdAt ASC LIMIT 5")
     List<WaitingQueue> findNextTokens();
 
     @Modifying

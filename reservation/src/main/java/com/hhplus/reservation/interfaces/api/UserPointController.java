@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/point")
 @RequiredArgsConstructor
-@Tag(name = "Reservation", description = "대기열 토큰 API")
+@Tag(name = "UserPoint", description = "사용자포인트 API")
 public class UserPointController {
 
     private final UserPointUsecase userPointUsecase;

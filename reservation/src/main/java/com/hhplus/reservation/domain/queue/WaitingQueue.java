@@ -7,6 +7,7 @@ import com.hhplus.reservation.support.error.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.nio.file.Watchable;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
@@ -30,7 +31,7 @@ public class WaitingQueue extends Timestamped {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(name = "token")
+    @Column(name = "token", nullable = false, unique = true)
     private String token;
 
     @Column(name = "status")
@@ -51,19 +52,25 @@ public class WaitingQueue extends Timestamped {
                 .createdAt(queue.getCreatedAt()).build();
     }
 
-    public static String makeToken(Long userId, Optional<WaitingQueue> optionalQueue){
-        if (optionalQueue.isPresent()) {
-            return optionalQueue.get().getToken();
-        }else{
-            return makeToken(userId);
-        }
+    public static String makeToken(Long userId) {
+        UUID uuid = UUID.nameUUIDFromBytes(userId.toString().getBytes());
+        String tokenStr = userId + "__" + uuid;
+        return Base64.getEncoder().encodeToString(tokenStr.getBytes());
     }
 
-    static String makeToken(Long userId){
-        UUID uuid = UUID.nameUUIDFromBytes(userId.toString().getBytes());
-        String concatStr = userId + "__" + uuid.toString();
-        return Base64.getEncoder().encodeToString(concatStr.getBytes());
-    }
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//    public static String makeToken(Long userId, Optional<WaitingQueue> optionalQueue){
+//        if (optionalQueue.isPresent()) {
+//            return optionalQueue.get().getToken();
+//        }else{
+//            return makeToken(userId);
+//        }
+//    }
 
     public static void validateToken(boolean isValidToken){
         if(!isValidToken){
@@ -72,6 +79,7 @@ public class WaitingQueue extends Timestamped {
     }
 
     public static void checkToken(boolean isPresentToken){
+        System.out.println("checkToken isPresentToken  :" + isPresentToken);
         if(!isPresentToken){
              throw new CustomException(ErrorCode.TOKEN_NOT_FOUND);
         }

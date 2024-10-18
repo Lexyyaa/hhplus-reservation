@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/queue")
 @RequiredArgsConstructor
-@Tag(name = "Reservation", description = "대기열 토큰 API")
-public class WatingQueueController {
+@Tag(name = "WaitingQueue", description = "대기열 토큰 API")
+public class WaitingQueueController {
 
     public final WaitingQueueService queueService;
 
@@ -25,8 +25,8 @@ public class WatingQueueController {
             @ApiResponse(responseCode = "400", description = "유효하지 않은 토큰입니다.")
     })
     @PostMapping("/token/{userId}")
-    public WaitingQueueResponse makeQueueToken(@PathVariable("userId") Long userId) {
-        return queueService.makeQueueToken(userId);
+    public WaitingQueueResponse issueToken(@PathVariable("userId") Long userId) {
+        return queueService.getOrCreateQueueToken(userId);
     }
 
     @Operation(summary = "폴링", description = "대기번호를 반환합니다.")

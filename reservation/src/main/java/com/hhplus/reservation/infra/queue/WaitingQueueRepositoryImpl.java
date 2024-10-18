@@ -4,6 +4,7 @@ import com.hhplus.reservation.domain.queue.WaitingQueue;
 import com.hhplus.reservation.domain.queue.WaitingQueueRepository;
 import com.hhplus.reservation.domain.queue.WaitingQueueStatus;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -18,10 +19,13 @@ public class WaitingQueueRepositoryImpl implements WaitingQueueRepository {
 
     @Override
     public Optional<WaitingQueue> findWaitingQueueByUserId(Long userId) {
-        return jPAWaitingQueueRepository.findWaitingQueue(userId);
+        return jPAWaitingQueueRepository.findWaitingQueue(userId,WaitingQueueStatus.WAITING);
     }
     @Override
     public WaitingQueue save(WaitingQueue queueToken) {
+        System.out.println("save queue.userId().  :" + queueToken.getUserId());
+        System.out.println("save queue.getToken().  :" + queueToken.getToken());
+
         return jPAWaitingQueueRepository.save(queueToken);
     }
 
@@ -30,9 +34,11 @@ public class WaitingQueueRepositoryImpl implements WaitingQueueRepository {
         return jPAWaitingQueueRepository.findWaitingQueue(userId,queueToken);
     }
     @Override
-    public Long findMyWaitNum(LocalDateTime createdAt ){
+    public Long findMyWaitNum(LocalDateTime createdAt){
         return jPAWaitingQueueRepository.findMyWaitNum(createdAt);
     }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public boolean  validateToken(String token) {
