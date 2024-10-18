@@ -1,52 +1,36 @@
 package com.hhplus.reservation.interfaces.api;
 
+import com.hhplus.reservation.application.usecase.PaymentUsecase;
 import com.hhplus.reservation.interfaces.dto.payment.PaymentResponse;
-import org.springframework.http.ResponseEntity;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.LinkedList;
-import java.util.Queue;
 
 @RestController
 @RequestMapping("/api/pay")
+@RequiredArgsConstructor
+@Tag(name = "Payment", description = "결제 API")
 public class PaymentController {
 
-    // Mock 대기열 (유효한 토큰 저장)
-    public static Queue<String> waitingQueue = new LinkedList<>();
+    private final PaymentUsecase paymentUsecase;
 
-    static {
-        // 미리 대기열에 토큰 추가
-        waitingQueue.add("MTA6ZGM0ZDU0NDYtNDg5NC00NzgzLWFmMmYtODZiYjUwNDgxOTdh");
-    }
-
-    // 결제 API
-    @PostMapping("/{reservationId}")
-    public ResponseEntity<PaymentResponse> payment(
+    @Operation(summary = "결제 요청", description = "사용자가 예약한 좌석을 결제합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "결제 성공"),
+            @ApiResponse(responseCode = "409", description = "이미 결제된 예약입니다."),
+            @ApiResponse(responseCode = "400", description = "결제 시간이 초과되었습니다."),
+            @ApiResponse(responseCode = "401", description = "유효하지 않은 결제 토큰입니다.")
+    })
+    @PostMapping("/{reservationId}/{userId}")
+    public PaymentResponse payment(
             @RequestHeader("Authorization") String queueToken,
-            @PathVariable("reservationId") Long reservationId) {
-
-        validateToken(queueToken);
-
-        PaymentResponse paymentResponse = payment(reservationId);
-        return ResponseEntity.ok().body(paymentResponse);
-    }
-
-    // Mock API용 메소드
-    private PaymentResponse payment(Long reservationId){
-        return new PaymentResponse(
-                1L,
-                10L,
-                "흠뻑쇼",
-                LocalDate.parse("2025-08-08"),
-                250000L,
-                LocalDateTime.now());
-    }
-
-    private void validateToken(String queueToken) {
-        if (queueToken == null || !waitingQueue.contains(queueToken)) {
-            throw new IllegalArgumentException("유효하지 않은 접근입니다.");
-        }
+            @PathVariable("reservationId") Long reservationId,
+            @PathVariable("userId") Long userId,
+            @RequestBody Long amount
+    ) {
+        return paymentUsecase.pay(queueToken,reservationId,userId,amount);
     }
 }
