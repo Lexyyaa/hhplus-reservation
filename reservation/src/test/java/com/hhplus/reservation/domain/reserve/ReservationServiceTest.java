@@ -1,98 +1,138 @@
 package com.hhplus.reservation.domain.reserve;
 
-import com.hhplus.reservation.application.dto.ReservationInfo;
-import org.junit.jupiter.api.BeforeEach;
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.dao.OptimisticLockingFailureException;
-
+import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.List;
+import com.hhplus.reservation.application.dto.ReservationInfo;
+import com.hhplus.reservation.domain.reserve.*;
+import com.hhplus.reservation.domain.concert.ConcertRepository;
+import com.hhplus.reservation.domain.concert.ConcertSeatStatus;
+import com.hhplus.reservation.support.error.BizException;
+import com.hhplus.reservation.support.error.ErrorType;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
+@ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
 
     @Mock
     private ReservationRepository reservationRepository;
 
+    @Mock
+    private ConcertRepository concertRepository;
+
     @InjectMocks
     private ReservationService reservationService;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
-
     @Test
-    @DisplayName("예약을 성공적으로 생성한다")
-    void 예약을_성공적으로_생성한다() {
-        ReservationInfo reservationInfo = ReservationInfo.builder()
-                .userId(1L)
-                .concertScheduleId(1L)
-                .totalPrice(100L)
-                .reserved(ReservationType.TEMP_RESERVED)
-                .reserveRequestAt(LocalDateTime.now())
-                .reserveExpiredAt(LocalDateTime.now().plusMinutes(5))
-                .build();
+    @DisplayName("좌석 예약 성공")
+    void 좌석_예약_성공() {
+        Long userId = 1L;
+        Long concertScheduleId = 100L;
+        Long totalPrice = 150000L;
+        List<Long> seatIds = List.of(1L, 2L);
 
-        Reservation reservation = Reservation.create(reservationInfo);
-
+        Reservation reservation = Reservation.create(userId, concertScheduleId, totalPrice, ReservationType.TEMP_RESERVED);
         when(reservationRepository.save(any(Reservation.class))).thenReturn(reservation);
 
-        ReservationInfo result = reservationService.reserve(1L, 1L, 100L, List.of(1L, 2L));
+        ReservationInfo result = reservationService.reserve(concertScheduleId, userId, totalPrice, seatIds);
 
         assertNotNull(result);
-        assertEquals(1L, result.getUserId());
-        assertEquals(100L, result.getTotalPrice());
+        verify(reservationRepository).save(any(Reservation.class));
+        verify(reservationRepository).saveAll(anyList());
     }
 
     @Test
-    @DisplayName("예약 조회에 성공한다")
-    void 예약_조회에_성공한다() {
-        Reservation reservation = Reservation.builder()
+    @DisplayName("예약 내역 조회 성공")
+    void 예약_내역_조회_성공() {
+        Long reservationId = 1L;
+        Reservation reservation = Reservation.builder().id(reservationId).build();
+
+        when(reservationRepository.findByIdWithLock(reservationId)).thenReturn(reservation);
+
+        ReservationInfo result = reservationService.getReservation(reservationId);
+
+        assertNotNull(result);
+        assertEquals(reservationId, result.getId());
+        verify(reservationRepository).findByIdWithLock(reservationId);
+    }
+
+    @Test
+    @DisplayName("예약 내역이 존재하지 않음")
+    void 예약_내역이_존재하지_않음() {
+        Long reservationId = 1L;
+
+        when(reservationRepository.findByIdWithLock(reservationId))
+                .thenThrow(new BizException(ErrorType.RESERVATION_NOT_FOUND));
+
+        BizException exception = assertThrows(BizException.class,
+                () -> reservationService.getReservation(reservationId));
+
+        assertEquals(ErrorType.RESERVATION_NOT_FOUND, exception.getErrorType());
+    }
+
+    @Test
+    @DisplayName("예약 확정 성공")
+    void 예약_확정_성공() {
+        ReservationInfo reservationInfo = ReservationInfo.builder()
                 .id(1L)
                 .userId(1L)
-                .concertScheduleId(1L)
+                .concertScheduleId(100L)
+                .totalPrice(150000L)
                 .build();
 
-        when(reservationRepository.findByIdWithLock(1L)).thenReturn(reservation);
+        Reservation confirmedReservation = Reservation.create(reservationInfo);
+        confirmedReservation.setReserved(ReservationType.RESERVED);
+        confirmedReservation.setReservedAt(LocalDateTime.now());
 
-        ReservationInfo result = reservationService.getReservation(1L);
+        when(reservationRepository.save(any(Reservation.class))).thenReturn(confirmedReservation);
 
-        assertNotNull(result);
-        assertEquals(1L, result.getUserId());
+        ReservationInfo result = reservationService.confirmedReservation(reservationInfo);
+
+        assertEquals(ReservationType.RESERVED, result.getReserved());
+        verify(reservationRepository).save(any(Reservation.class));
     }
 
     @Test
-    @DisplayName("예약 조회에 실패한다 - 예약이 존재하지 않을 때")
-    void 예약_조회에_실패한다_예약이_존재하지_않을_때() {
-        when(reservationRepository.findByIdWithLock(1L))
-                .thenThrow(new RuntimeException("예약내역이 존재하지 않습니다."));
-
-        RuntimeException exception = assertThrows(
-                RuntimeException.class,
-                () -> reservationService.getReservation(1L)
-        );
-
-        assertEquals("예약내역이 존재하지 않습니다.", exception.getMessage());
-    }
-
-    @Test
-    @DisplayName("만료된 예약을 정리한다")
-    void 만료된_예약을_정리한다() {
-        Reservation reservation = Reservation.builder()
+    @DisplayName("예약 만료된 내역 복원")
+    void 예약_만료된_내역_복원() {
+        Reservation expiredReservation = Reservation.builder()
                 .id(1L)
-                .concertScheduleId(1L)
+                .concertScheduleId(100L)
                 .build();
 
-        when(reservationRepository.findExpiredReservation()).thenReturn(List.of(reservation));
+        List<Long> seatIds = List.of(1L, 2L);
 
-        assertDoesNotThrow(() -> reservationService.restoreReservation());
+        when(reservationRepository.findExpiredReservation()).thenReturn(List.of(expiredReservation));
+        when(reservationRepository.findByReservationId(expiredReservation.getId())).thenReturn(seatIds);
+
+        reservationService.restoreReservation();
+
+        verify(concertRepository).updateSeatsAvaliable(seatIds, ConcertSeatStatus.AVAILABLE);
+        verify(concertRepository).updateAvailableSeats(expiredReservation.getConcertScheduleId(), seatIds.size());
+        verify(reservationRepository).delete(expiredReservation);
+        verify(reservationRepository).deleteAll(seatIds);
+    }
+
+    @Test
+    @DisplayName("이미 예약된 좌석 예외")
+    void 이미_예약된_좌석_예외() {
+        Long userId = 1L;
+        Long concertScheduleId = 100L;
+        Long totalPrice = 150000L;
+        List<Long> seatIds = List.of(1L, 2L);
+
+        when(reservationRepository.save(any(Reservation.class)))
+                .thenThrow(new BizException(ErrorType.SEAT_ALREADY_RESERVED));
+
+        BizException exception = assertThrows(BizException.class,
+                () -> reservationService.reserve(concertScheduleId, userId, totalPrice, seatIds));
+
+        assertEquals(ErrorType.SEAT_ALREADY_RESERVED, exception.getErrorType());
     }
 }
