@@ -16,4 +16,5 @@ class UserPointConcurrencyTest {
     @Autowired
     private UserPointRepository userPointRepository;
 
+    // 충전 동시성 테스트
 }
