@@ -1,8 +1,9 @@
 package com.hhplus.reservation.domain.point;
 import com.hhplus.reservation.application.dto.UserPointInfo;
 import com.hhplus.reservation.domain.common.Timestamped;
-import com.hhplus.reservation.support.error.CustomException;
+import com.hhplus.reservation.support.error.BizException;
 import com.hhplus.reservation.support.error.ErrorCode;
+import com.hhplus.reservation.support.error.ErrorType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,15 +26,15 @@ public class UserPoint extends Timestamped {
     @Column(name = "point")
     private Long point;
 
-    public static void isValidUser(UserPoint userPoint, Long amount) {
+    public static void isEnoughPoint(UserPoint userPoint, Long amount) {
         if (userPoint.getPoint() < amount) {
-            throw new CustomException(ErrorCode.INSUFFICIENT_POINTS);
+            throw new BizException(ErrorType.INSUFFICIENT_POINTS);
         }
     }
 
     public static void isValidAmount(Long amount) {
-        if (amount < 0) {
-            throw new CustomException(ErrorCode.INVALID_CHARGE_AMOUNT);
+        if (amount < 1) {
+            throw new BizException(ErrorType.INVALID_CHARGE_AMOUNT);
         }
     }
 

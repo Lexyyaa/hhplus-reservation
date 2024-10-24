@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class WaitingQueueScheduler {
     private final WaitingQueueService waitingQueueService;
 
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 30000)
     public void checkProcessToken() {
         waitingQueueService.updateProcessToken();
     }

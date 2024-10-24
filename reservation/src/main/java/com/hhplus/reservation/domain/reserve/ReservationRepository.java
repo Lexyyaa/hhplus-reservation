@@ -13,5 +13,6 @@ public interface ReservationRepository {
     List<Reservation> findExpiredReservation();
 
     void delete(Reservation reservation);
+
     void deleteAll(List<Long> seatIds);
 }

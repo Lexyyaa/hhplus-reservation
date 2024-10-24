@@ -2,8 +2,9 @@ package com.hhplus.reservation.domain.queue;
 
 import com.hhplus.reservation.domain.common.Timestamped;
 import com.hhplus.reservation.interfaces.dto.queue.WaitingQueueResponse;
-import com.hhplus.reservation.support.error.CustomException;
+import com.hhplus.reservation.support.error.BizException;
 import com.hhplus.reservation.support.error.ErrorCode;
+import com.hhplus.reservation.support.error.ErrorType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,7 +31,7 @@ public class WaitingQueue extends Timestamped {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(name = "token")
+    @Column(name = "token", nullable = false, unique = true)
     private String token;
 
     @Column(name = "status")
@@ -51,45 +52,36 @@ public class WaitingQueue extends Timestamped {
                 .createdAt(queue.getCreatedAt()).build();
     }
 
-    public static String makeToken(Long userId, Optional<WaitingQueue> optionalQueue){
-        if (optionalQueue.isPresent()) {
-            return optionalQueue.get().getToken();
-        }else{
-            return makeToken(userId);
-        }
-    }
-
-    static String makeToken(Long userId){
+    public static String makeToken(Long userId) {
         UUID uuid = UUID.nameUUIDFromBytes(userId.toString().getBytes());
-        String concatStr = userId + "__" + uuid.toString();
-        return Base64.getEncoder().encodeToString(concatStr.getBytes());
+        String tokenStr = userId + "__" + uuid;
+        return Base64.getEncoder().encodeToString(tokenStr.getBytes());
     }
 
     public static void validateToken(boolean isValidToken){
         if(!isValidToken){
-            throw new CustomException(ErrorCode.VALIDATED_TOKEN);
+            throw new BizException(ErrorType.VALIDATED_TOKEN);
         }
     }
 
     public static void checkToken(boolean isPresentToken){
         if(!isPresentToken){
-             throw new CustomException(ErrorCode.TOKEN_NOT_FOUND);
+            throw new BizException(ErrorType.TOKEN_NOT_FOUND);
         }
     }
 
     public static void isValidCount(Long currProgressCnt) {
         if (currProgressCnt >= 5) {
-            throw new CustomException(ErrorCode.MAX_PROGRESS_EXCEEDED);
+            throw new BizException(ErrorType.MAX_PROGRESS_EXCEEDED);
         }
     }
 
     public static void isValidTokenList(List<WaitingQueue> waitingQueues) {
         if (waitingQueues == null || waitingQueues.isEmpty()) {
-             throw new CustomException(ErrorCode.EMPTY_QUEUE);
+            throw new BizException(ErrorType.EMPTY_QUEUE);
         }
     }
 }
-
 
 
 

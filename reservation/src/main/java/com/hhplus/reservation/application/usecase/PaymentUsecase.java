@@ -10,6 +10,7 @@ import com.hhplus.reservation.domain.point.UserPointService;
 import com.hhplus.reservation.domain.queue.WaitingQueueService;
 import com.hhplus.reservation.domain.reserve.ReservationService;
 import com.hhplus.reservation.interfaces.dto.payment.PaymentResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -22,10 +23,8 @@ public class PaymentUsecase {
     private final ConcertService concertService;
     private final PaymentService paymentService;
 
-    public PaymentResponse pay(String token, Long reservationId, Long userId, Long amount){
-
-        queueService.validateToken(token);
-
+    @Transactional
+    public PaymentResponse pay(String token, Long reservationId, Long userId){
         ReservationInfo reservation = reservationService.getReservation(reservationId);
         ConcertScheduleInfo schedule = concertService.getConcertSchedule(reservation.getConcertScheduleId());
         ConcertInfo concert = concertService.getConcert(schedule.getConcertId());
@@ -39,7 +38,6 @@ public class PaymentUsecase {
         reservationService.confirmedReservation(reservation);
 
         queueService.updateTokenDone(token);
-
         return PaymentInfo.convert(userId,concert.getTitle(),reservation.getTotalPrice());
     }
 }

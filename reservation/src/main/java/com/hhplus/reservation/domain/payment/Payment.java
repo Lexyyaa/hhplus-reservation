@@ -1,8 +1,8 @@
 package com.hhplus.reservation.domain.payment;
 
 import com.hhplus.reservation.domain.common.Timestamped;
-import com.hhplus.reservation.support.error.CustomException;
-import com.hhplus.reservation.support.error.ErrorCode;
+import com.hhplus.reservation.support.error.BizException;
+import com.hhplus.reservation.support.error.ErrorType;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -34,20 +34,22 @@ public class Payment extends Timestamped {
     private LocalDateTime paidAt;
 
     public static void isExpiredPayment(LocalDateTime reserveExpiredAt){
+        System.out.println("isExpiredPayment reserveExpiredAt : "+reserveExpiredAt);
         if (reserveExpiredAt.isBefore(LocalDateTime.now())) {
-            throw new CustomException(ErrorCode.PAYMENT_EXPIRED);
+            throw new BizException(ErrorType.PAYMENT_EXPIRED);
         }
     }
 
     public static void isValidPrice(Long totalPrice){
+        System.out.println("isExpiredPayment totalPrice : "+totalPrice);
         if(totalPrice < 0){
-            throw new CustomException(ErrorCode.INVALID_PAYMENT_AMOUNT);
+            throw new BizException(ErrorType.INVALID_PAYMENT_AMOUNT);
         }
     }
 
     public static void isPaidPayment(boolean isPaid){
         if (isPaid) {
-            throw new CustomException(ErrorCode.PAYMENT_ALREADY_MADE);
+            throw new BizException(ErrorType.PAYMENT_ALREADY_MADE);
         }
     }
 }

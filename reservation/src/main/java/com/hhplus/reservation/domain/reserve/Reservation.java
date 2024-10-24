@@ -61,6 +61,7 @@ public class Reservation extends Timestamped {
 
     public static Reservation create(ReservationInfo reservation) {
         return Reservation.builder()
+                .id(reservation.getId())
                 .userId(reservation.getUserId())
                 .concertScheduleId(reservation.getConcertScheduleId())
                 .totalPrice(reservation.getTotalPrice())

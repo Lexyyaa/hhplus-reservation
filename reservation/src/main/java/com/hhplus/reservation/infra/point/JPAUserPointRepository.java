@@ -15,6 +15,4 @@ public interface JPAUserPointRepository extends JpaRepository<UserPoint,Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT u FROM UserPoint u WHERE u.id = :userId")
     Optional<UserPoint> findByUserIdWithLock(@Param("userId") Long userId);
-
-    UserPoint save(UserPoint userPoint);
 }

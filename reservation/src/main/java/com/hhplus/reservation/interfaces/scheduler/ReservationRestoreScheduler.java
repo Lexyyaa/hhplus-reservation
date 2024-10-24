@@ -10,9 +10,8 @@ import org.springframework.stereotype.Component;
 public class ReservationRestoreScheduler {
 
     private final ReservationService reservationService;
-    @Scheduled(fixedRate = 300000)
+    @Scheduled(fixedRate = 10000)
     public void checkProcessToken() {
         reservationService.restoreReservation();
     }
 }
-

@@ -15,6 +15,10 @@ import java.util.List;
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ConcertRepository concertRepository;
+
+    /**
+     * 좌석을 예약한다.
+     */
     @Transactional
     public ReservationInfo reserve(Long concertScheduleId, Long userId, Long totalPrice, List<Long> seats){
         Reservation currReservation = Reservation.create(userId, concertScheduleId, totalPrice,ReservationType.TEMP_RESERVED);
@@ -26,16 +30,21 @@ public class ReservationService {
         return Reservation.convert(reservation);
     }
 
+    /**
+     * 예약정보를 반환한다.
+     */
     @Transactional
     public ReservationInfo getReservation(long reservationId) {
         Reservation reservation = reservationRepository.findByIdWithLock(reservationId);
         return Reservation.convert(reservation);
     }
 
+    /**
+     * 예약을 확정한다.
+     */
     public ReservationInfo confirmedReservation(ReservationInfo reservation){
 
         Reservation currReservation = Reservation.create(reservation);
-
         currReservation.setReserved(ReservationType.RESERVED);
         currReservation.setReservedAt(LocalDateTime.now());
 
@@ -43,6 +52,9 @@ public class ReservationService {
         return Reservation.convert(saveReservation);
     }
 
+    /**
+     * 예약내역을 복원한다(예약만료)
+     */
     public void restoreReservation() {
         List<Reservation> expiredReservations = reservationRepository.findExpiredReservation();
 

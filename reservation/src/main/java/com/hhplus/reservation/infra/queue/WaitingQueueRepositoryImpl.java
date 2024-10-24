@@ -13,12 +13,11 @@ import java.util.Optional;
 @Repository
 @RequiredArgsConstructor
 public class WaitingQueueRepositoryImpl implements WaitingQueueRepository {
-
     private final JPAWaitingQueueRepository jPAWaitingQueueRepository;
 
     @Override
     public Optional<WaitingQueue> findWaitingQueueByUserId(Long userId) {
-        return jPAWaitingQueueRepository.findWaitingQueue(userId);
+        return jPAWaitingQueueRepository.findWaitingQueue(userId,WaitingQueueStatus.WAITING);
     }
     @Override
     public WaitingQueue save(WaitingQueue queueToken) {
@@ -30,19 +29,8 @@ public class WaitingQueueRepositoryImpl implements WaitingQueueRepository {
         return jPAWaitingQueueRepository.findWaitingQueue(userId,queueToken);
     }
     @Override
-    public Long findMyWaitNum(LocalDateTime createdAt ){
+    public Long findMyWaitNum(LocalDateTime createdAt){
         return jPAWaitingQueueRepository.findMyWaitNum(createdAt);
-    }
-
-    @Override
-    public boolean  validateToken(String token) {
-        Optional<WaitingQueue> optional = jPAWaitingQueueRepository.findInProcessQueue(token);
-        return optional.isPresent() ? true : false;
-    }
-
-    @Override
-    public void updateTokenDone(String token) {
-        jPAWaitingQueueRepository.updateTokenDone(token,LocalDateTime.now());
     }
 
     @Override
@@ -55,6 +43,7 @@ public class WaitingQueueRepositoryImpl implements WaitingQueueRepository {
         return jPAWaitingQueueRepository.findNextTokens();
     }
 
+
     @Override
     public void updateProcessToken(List<Long> queueList, LocalDateTime processedAt, LocalDateTime expiredAt) {
         jPAWaitingQueueRepository.updateProcessTokens(queueList,processedAt,expiredAt);
@@ -64,4 +53,15 @@ public class WaitingQueueRepositoryImpl implements WaitingQueueRepository {
     public void updateExpireToken() {
         jPAWaitingQueueRepository.updateExpire(WaitingQueueStatus.EXPIRED,LocalDateTime.now());
     }
+    @Override
+    public boolean  validateToken(String token) {
+        Optional<WaitingQueue> optional = jPAWaitingQueueRepository.findInProcessQueue(token);
+        return optional.isPresent() ? true : false;
+    }
+
+    @Override
+    public void updateTokenDone(String token) {
+        jPAWaitingQueueRepository.updateTokenDone(token,LocalDateTime.now());
+    }
+
 }

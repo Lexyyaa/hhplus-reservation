@@ -16,22 +16,36 @@ public class WaitingQueueService {
 
     private final WaitingQueueRepository queueRepository;
 
-    public WaitingQueueResponse makeQueueToken(Long userId) {
-
-
+    /**
+     * 토큰을 발급한다(대기열 진입)
+     */
+    @Transactional
+    public WaitingQueueResponse getOrCreateQueueToken(Long userId) {
         Optional<WaitingQueue> optionalQueue = queueRepository.findWaitingQueueByUserId(userId);
 
-        String token = WaitingQueue.makeToken(userId,optionalQueue);
+        if (optionalQueue.isPresent()) {
+            return WaitingQueue.convert(optionalQueue.get());
+        }
 
-        WaitingQueue queue = queueRepository.save(WaitingQueue.builder()
-                                                .userId(userId)
-                                                .token(token)
-                                                .status(WaitingQueueStatus.WATING).build());
-        return WaitingQueue.convert(queue);
+        String token = WaitingQueue.makeToken(userId);
+        WaitingQueue queue = WaitingQueue.builder()
+                .userId(userId)
+                .token(token)
+                .status(WaitingQueueStatus.WAITING)
+                .build();
+
+
+        WaitingQueue newQueue = queueRepository.save(queue);
+        return WaitingQueue.convert(newQueue);
     }
 
+
+    /**
+     * 나의 대기번호를 조회한다.
+     */
     public WaitingQueuePollingResponse getQueueToken(Long userId, String queueToken) {
         Optional<WaitingQueue> optional = queueRepository.findWaitingQueueByToken(userId, queueToken);
+
         WaitingQueue.checkToken(optional.isPresent());
 
         Long waitNum = queueRepository.findMyWaitNum(optional.get().getCreatedAt());
@@ -40,11 +54,10 @@ public class WaitingQueueService {
                 .createdAt(optional.get().getCreatedAt()).build();
     }
 
-    public void validateToken(String queueToken){
-        boolean isValidToken = queueRepository.validateToken(queueToken);
-        WaitingQueue.validateToken(isValidToken);
-    }
 
+    /**
+     * 토큰을 실행처리한다.
+     */
     @Transactional
     public void updateProcessToken() {
         Long currProgressCnt = queueRepository.countProgressToken();
@@ -63,11 +76,31 @@ public class WaitingQueueService {
         queueRepository.updateProcessToken(queueList,currTime, currTime.plusMinutes(10));
     }
 
-    public void updateTokenDone(String token){
-        queueRepository.updateTokenDone(token);
-    }
+    /**
+     * 토큰을 만료처리한다.
+     */
     @Transactional
     public void updateExpireToken() {
         queueRepository.updateExpireToken();
     }
+
+    /**
+     * 토큰이 유효한지 검증한다.
+     */
+    public void validateToken(String queueToken){
+
+        System.out.println("validateToken queueToken : "+queueToken);
+
+        boolean isValidToken = queueRepository.validateToken(queueToken);
+        WaitingQueue.validateToken(isValidToken);
+    }
+
+    /**
+     * 토큰을 완료처리한다.
+     */
+    @Transactional
+    public void updateTokenDone(String token){
+        queueRepository.updateTokenDone(token);
+    }
+
 }
