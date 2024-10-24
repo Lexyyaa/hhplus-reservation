@@ -29,5 +29,4 @@ public class Concert extends Timestamped {
                 .build();
 
     }
-
 }

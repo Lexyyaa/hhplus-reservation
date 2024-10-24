@@ -2,8 +2,9 @@ package com.hhplus.reservation.domain.concert;
 
 import com.hhplus.reservation.application.dto.ConcertSeatInfo;
 import com.hhplus.reservation.domain.common.Timestamped;
-import com.hhplus.reservation.support.error.CustomException;
+import com.hhplus.reservation.support.error.BizException;
 import com.hhplus.reservation.support.error.ErrorCode;
+import com.hhplus.reservation.support.error.ErrorType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -60,7 +61,13 @@ public class ConcertSeat extends Timestamped {
 
     public static void chkAllSeatAvaliable(int seatsSize,Long avaliableCnt){
         if(seatsSize != avaliableCnt){
-            throw new CustomException(ErrorCode.UNAVAILABLE_SEAT);
+            throw new BizException(ErrorType.UNAVAILABLE_SEAT);
+        }
+    }
+
+    public static void isEmptySeatList(List<ConcertSeat> seats){
+        if(seats.isEmpty()){
+            throw new BizException(ErrorType.SEATS_NOT_FOUND);
         }
     }
 }

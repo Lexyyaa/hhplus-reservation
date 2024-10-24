@@ -2,6 +2,8 @@ package com.hhplus.reservation.domain.concert;
 
 import com.hhplus.reservation.application.dto.ConcertScheduleInfo;
 import com.hhplus.reservation.domain.common.Timestamped;
+import com.hhplus.reservation.support.error.BizException;
+import com.hhplus.reservation.support.error.ErrorType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -63,5 +65,12 @@ public class ConcertSchedule extends Timestamped {
                         .availableSeatNum(schedule.getAvailableSeatNum())
                         .availableStatus(schedule.getAvailableStatus())
                         .build();
+    }
+
+
+    public static void isEmptyScheduleList(List<ConcertSchedule> schedules){
+        if(schedules.isEmpty()){
+            throw new BizException(ErrorType.CONCERT_SCHEDULE_NOT_FOUND);
+        }
     }
 }

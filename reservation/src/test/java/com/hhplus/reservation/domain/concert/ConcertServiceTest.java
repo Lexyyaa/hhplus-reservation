@@ -1,21 +1,21 @@
 package com.hhplus.reservation.domain.concert;
 
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.hhplus.reservation.application.dto.ConcertInfo;
 import com.hhplus.reservation.application.dto.ConcertScheduleInfo;
-import org.junit.jupiter.api.BeforeEach;
+import com.hhplus.reservation.application.dto.ConcertSeatInfo;
+import com.hhplus.reservation.domain.concert.*;
+import com.hhplus.reservation.support.error.BizException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ConcertServiceTest {
@@ -26,73 +26,104 @@ class ConcertServiceTest {
     @InjectMocks
     private ConcertService concertService;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
-
     @Test
-    @DisplayName("콘서트 정보를 성공적으로 조회한다.")
-    void 콘서트_정보를_성공적으로_조회한다() {
-        Long concertId = 1L;
-        Concert concert = Concert.builder().id(concertId).title("Test Concert").build();
-
-        when(concertRepository.getConcert(concertId)).thenReturn(concert);
-
-        ConcertInfo result = concertService.getConcert(concertId);
-
-        assertNotNull(result);
-        assertEquals("Test Concert", result.getTitle());
-    }
-
-    @Test
-    @DisplayName("콘서트 조회에 실패한다 - 콘서트 정보가 존재하지 않을 때")
-    void 콘서트_조회에_실패한다_콘서트_정보가_존재하지_않을_때() {
-        Long concertId = 1L;
-
-        when(concertRepository.getConcert(concertId))
-                .thenThrow(new RuntimeException("콘서트 정보가 존재하지 않습니다."));
-
-        RuntimeException exception = assertThrows(
-                RuntimeException.class,
-                () -> concertService.getConcert(concertId)
-        );
-
-        assertEquals("콘서트 정보가 존재하지 않습니다.", exception.getMessage());
-    }
-
-    @Test
-    @DisplayName("예약 가능한 날짜를 성공적으로 조회한다.")
-    void 예약_가능한_날짜를_성공적으로_조회한다() {
+    @DisplayName("예약일정_조회성공")
+    void 예약일정_조회성공() {
         Long concertId = 1L;
         List<ConcertSchedule> schedules = List.of(
-                ConcertSchedule.builder().id(1L).concertId(concertId).performDate(LocalDate.now()).build()
+                ConcertSchedule.builder().id(1L).concertId(concertId).build()
         );
 
         when(concertRepository.getSchedules(concertId)).thenReturn(schedules);
 
         List<ConcertScheduleInfo> result = concertService.getSchedules(concertId);
 
-        assertNotNull(result);
-        assertFalse(result.isEmpty());
         assertEquals(1, result.size());
+        verify(concertRepository).getSchedules(concertId);
     }
 
     @Test
-    @DisplayName("예약 가능한 날짜 조회에 실패한다 - 스케줄이 존재하지 않을 때")
-    void 예약_가능한_날짜_조회에_실패한다_스케줄이_존재하지_않을_때() {
-        Long concertId = 1L;
+    @DisplayName("예약일정_없음")
+    void 예약일정_없음() {
+        Long concertId = 99L;
 
-        // Mock 설정: 빈 리스트 반환
         when(concertRepository.getSchedules(concertId)).thenReturn(List.of());
 
-        // 예외 발생 여부 확인
-        RuntimeException exception = assertThrows(
-                RuntimeException.class,
-                () -> concertService.getSchedules(concertId)
+        assertThrows(BizException.class, () -> concertService.getSchedules(concertId));
+    }
+
+    @Test
+    @DisplayName("좌석목록_조회성공")
+    void 좌석목록_조회성공() {
+        Long scheduleId = 1L;
+
+        List<ConcertSeat> seats = List.of(
+                ConcertSeat.builder()
+                        .id(1L)
+                        .concertScheduleId(scheduleId)
+                        .seatNum("A1")
+                        .seatPrice(50000L)
+                        .status(ConcertSeatStatus.AVAILABLE)
+                        .build()
         );
 
-        // 예외 메시지 검증
-        assertEquals("예약 가능한 날짜가 존재하지 않습니다.", exception.getMessage());
+        when(concertRepository.getSeats(scheduleId)).thenReturn(seats);
+
+        List<ConcertSeatInfo> result = concertService.getSeats(scheduleId);
+
+        assertEquals(1, result.size());
+        assertEquals(scheduleId, result.get(0).getConcertScheduleId());
+        verify(concertRepository).getSeats(scheduleId);
+    }
+
+    @Test
+    @DisplayName("좌석목록_없음")
+    void 좌석목록_없음() {
+        Long scheduleId = 99L;
+
+        when(concertRepository.getSeats(scheduleId)).thenReturn(List.of());
+
+        assertThrows(BizException.class, () -> concertService.getSeats(scheduleId));
+    }
+
+    @Test
+    @DisplayName("콘서트정보_조회성공")
+    void 콘서트정보_조회성공() {
+        Long concertId = 1L;
+        Concert concert = Concert.builder().id(concertId).title("Concert A").build();
+
+        when(concertRepository.getConcert(concertId)).thenReturn(concert);
+
+        ConcertInfo result = concertService.getConcert(concertId);
+
+        assertEquals("Concert A", result.getTitle());
+        verify(concertRepository).getConcert(concertId);
+    }
+
+    @Test
+    @DisplayName("좌석예약_성공")
+    void 좌석예약_성공() {
+        Long scheduleId = 1L;
+        List<Long> seats = List.of(1L, 2L);
+
+        when(concertRepository.countSeatAvaliable(seats)).thenReturn(2L);
+        when(concertRepository.getTotalPrice(seats)).thenReturn(100000L);
+
+        Long totalPrice = concertService.updateSeatStatus(scheduleId, seats);
+
+        assertEquals(100000L, totalPrice);
+        verify(concertRepository).updateSeatsStatusWithLock(seats, ConcertSeatStatus.UNAVAILABLE);
+        verify(concertRepository).updateAvailableSeats(scheduleId, seats.size());
+    }
+
+    @Test
+    @DisplayName("좌석수_불일치")
+    void 좌석수_불일치() {
+        Long scheduleId = 1L;
+        List<Long> seats = List.of(1L, 2L, 3L);
+
+        when(concertRepository.countSeatAvaliable(seats)).thenReturn(2L);
+
+        assertThrows(BizException.class, () -> concertService.updateSeatStatus(scheduleId, seats));
     }
 }
