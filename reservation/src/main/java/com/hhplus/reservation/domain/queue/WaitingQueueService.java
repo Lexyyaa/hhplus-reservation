@@ -29,10 +29,10 @@ public class WaitingQueueService {
 
         String token = WaitingQueue.makeToken(userId);
         WaitingQueue queue = WaitingQueue.builder()
-                                        .userId(userId)
-                                        .token(token)
-                                        .status(WaitingQueueStatus.WAITING)
-                                        .build();
+                .userId(userId)
+                .token(token)
+                .status(WaitingQueueStatus.WAITING)
+                .build();
 
 
         WaitingQueue newQueue = queueRepository.save(queue);
@@ -54,15 +54,6 @@ public class WaitingQueueService {
                 .createdAt(optional.get().getCreatedAt()).build();
     }
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * 토큰이 유효한지 검증한다.
-     */
-    public void validateToken(String queueToken){
-        boolean isValidToken = queueRepository.validateToken(queueToken);
-        WaitingQueue.validateToken(isValidToken);
-    }
 
     /**
      * 토큰을 실행처리한다.
@@ -86,6 +77,25 @@ public class WaitingQueueService {
     }
 
     /**
+     * 토큰을 만료처리한다.
+     */
+    @Transactional
+    public void updateExpireToken() {
+        queueRepository.updateExpireToken();
+    }
+
+    /**
+     * 토큰이 유효한지 검증한다.
+     */
+    public void validateToken(String queueToken){
+
+        System.out.println("validateToken queueToken : "+queueToken);
+
+        boolean isValidToken = queueRepository.validateToken(queueToken);
+        WaitingQueue.validateToken(isValidToken);
+    }
+
+    /**
      * 토큰을 완료처리한다.
      */
     @Transactional
@@ -93,11 +103,4 @@ public class WaitingQueueService {
         queueRepository.updateTokenDone(token);
     }
 
-    /**
-     * 토큰을 만료처리한다.
-     */
-    @Transactional
-    public void updateExpireToken() {
-        queueRepository.updateExpireToken();
-    }
 }
