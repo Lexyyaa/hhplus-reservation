@@ -3,8 +3,9 @@ package com.hhplus.reservation.infra.reservation;
 import com.hhplus.reservation.domain.reserve.Reservation;
 import com.hhplus.reservation.domain.reserve.ReservationRepository;
 import com.hhplus.reservation.domain.reserve.ReservationSeat;
-import com.hhplus.reservation.support.error.CustomException;
+import com.hhplus.reservation.support.error.BizException;
 import com.hhplus.reservation.support.error.ErrorCode;
+import com.hhplus.reservation.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -30,7 +31,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     @Override
     public Reservation findByIdWithLock(Long reservationId) {
         return jpaReservationRepository.findByIdWithLock(reservationId)
-                .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
+                .orElseThrow(() -> new BizException(ErrorType.RESERVATION_NOT_FOUND));
     }
 
     @Override
