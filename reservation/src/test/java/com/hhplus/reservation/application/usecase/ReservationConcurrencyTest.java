@@ -26,4 +26,5 @@ class ReservationConcurrencyTest {
     @Autowired
     private JPAReservationRepository reservationRepository;
 
+    // 예약 동시성 테스트
 }

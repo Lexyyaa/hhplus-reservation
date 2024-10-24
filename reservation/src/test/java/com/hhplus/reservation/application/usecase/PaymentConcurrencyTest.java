@@ -15,4 +15,5 @@ class PaymentConcurrencyTest {
     @Autowired
     private PaymentRepository paymentRepository;
 
+    // 결제 동시성 테스트
 }
