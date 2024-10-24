@@ -17,12 +17,12 @@ public class SwaggerConfig {
                         .title("Reservation API")
                         .version("1.0.0")
                         .description("공연 예약 시스템 API 명세서"))
-                .addSecurityItem(new SecurityRequirement().addList("queueToken"))  // SecurityRequirement에 연결
+                .addSecurityItem(new SecurityRequirement().addList("queueToken"))
                 .components(new io.swagger.v3.oas.models.Components()
                         .addSecuritySchemes("queueToken", new SecurityScheme()
-                                .name("Authorization")  // 헤더 이름 정의
-                                .type(SecurityScheme.Type.APIKEY)  // API Key 타입 사용
-                                .in(SecurityScheme.In.HEADER)  // 헤더에 포함
-                                .description("커스텀 UUID 토큰")));  // 설명 추가
+                                .name("Authorization")
+                                .type(SecurityScheme.Type.APIKEY)
+                                .in(SecurityScheme.In.HEADER)
+                                .description("커스텀 UUID 토큰")));
     }
 }
