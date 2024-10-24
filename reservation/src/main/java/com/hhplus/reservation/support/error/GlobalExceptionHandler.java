@@ -8,13 +8,29 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(CustomException.class)
-    public ResponseEntity<ErrorResponse> handleCustomException(CustomException ex) {
-        return ErrorResponse.toResponseEntity(ex.getErrorCode());
+    @ExceptionHandler(BizException.class)
+    public ResponseEntity<ErrorResponse> handleCustomException(BizException ex) {
+//        // error log handling
+//        switch (e.getErrorType().getLogLevel()) {
+//            case Error -> log.error();
+//            case Warn -> log.warn();
+//            default -> log.info();
+//        }
+//        // HTTP STATUS CODE MAPPING
+//        switch (e.getErrorType().getErrorCode()) {
+//            --->
+//            case DB_ERROR, KAKA_ERROR -> 500;
+//            case CLIENT_ERROR -> 400;
+//            case NOT_FOUND -> 404;
+//            default -> HttpStatus .200; ( 200 Error 표현하는 케이스 )
+//        }}
+        return ErrorResponse.toResponseEntity(ex.getErrorType());
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneralException(Exception ex) {
-        return ErrorResponse.toResponseEntity(ErrorCode.INTERNAL_SERVER_ERROR);
+        return ErrorResponse.toResponseEntity(ErrorType.INTERNAL_SERVER_ERROR);
     }
 }
+
+//https://github.com/hyunn12/hhplus-server-reservation/pull/21
