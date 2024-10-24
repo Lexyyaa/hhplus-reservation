@@ -58,42 +58,27 @@ public class WaitingQueue extends Timestamped {
         return Base64.getEncoder().encodeToString(tokenStr.getBytes());
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-//    public static String makeToken(Long userId, Optional<WaitingQueue> optionalQueue){
-//        if (optionalQueue.isPresent()) {
-//            return optionalQueue.get().getToken();
-//        }else{
-//            return makeToken(userId);
-//        }
-//    }
-
     public static void validateToken(boolean isValidToken){
         if(!isValidToken){
-            throw new CustomException(ErrorCode.VALIDATED_TOKEN);
+            throw new BizException(ErrorType.VALIDATED_TOKEN);
         }
     }
 
     public static void checkToken(boolean isPresentToken){
-        System.out.println("checkToken isPresentToken  :" + isPresentToken);
         if(!isPresentToken){
-             throw new CustomException(ErrorCode.TOKEN_NOT_FOUND);
+            throw new BizException(ErrorType.TOKEN_NOT_FOUND);
         }
     }
 
     public static void isValidCount(Long currProgressCnt) {
         if (currProgressCnt >= 5) {
-            throw new CustomException(ErrorCode.MAX_PROGRESS_EXCEEDED);
+            throw new BizException(ErrorType.MAX_PROGRESS_EXCEEDED);
         }
     }
 
     public static void isValidTokenList(List<WaitingQueue> waitingQueues) {
         if (waitingQueues == null || waitingQueues.isEmpty()) {
-             throw new CustomException(ErrorCode.EMPTY_QUEUE);
+            throw new BizException(ErrorType.EMPTY_QUEUE);
         }
     }
 }
