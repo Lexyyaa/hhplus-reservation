@@ -19,7 +19,7 @@ public class ReservationUsecase {
     private final ConcertService concertService;
     private final ReservationService reservationService;
 
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public ReserveResponse reserve(Long concertScheduleId, ReserveSeatRequest request){
         List<Long> seats = request.getSeats();
         Long userId = request.getUserId();
