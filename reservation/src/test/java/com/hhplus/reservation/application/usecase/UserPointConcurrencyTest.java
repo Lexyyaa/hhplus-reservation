@@ -7,14 +7,48 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class UserPointConcurrencyTest {
 
     @Autowired
-    private UserPointService userPointService;
+    private UserPointUsecase userPointUsecase;
 
-    @Autowired
-    private UserPointRepository userPointRepository;
+    private final ExecutorService executorService = Executors.newFixedThreadPool(3);
+    private final CountDownLatch latch = new CountDownLatch(3); 
 
-    // 충전 동시성 테스트
+    @Test
+    @DisplayName("동시 포인트 충전 시도 - 한 번만 성공")
+    void 동시_포인트_충전_한번만_성공() throws InterruptedException, ExecutionException {
+        Long userId = 1L;
+        Long amount = 5000L;
+
+        List<Future<Boolean>> futures = List.of(
+                executorService.submit(() -> chargePoint(userId, amount)),
+                executorService.submit(() -> chargePoint(userId, amount)),
+                executorService.submit(() -> chargePoint(userId, amount))
+        );
+
+        int successCount = 0;
+        for (Future<Boolean> future : futures) {
+            if (future.get()) { 
+                successCount++;
+            }
+        }
+
+        assertThat(successCount).isEqualTo(1);
+    }
+
+    Boolean chargePoint(Long userId, Long amount) {
+        try {
+            latch.countDown();
+            latch.await();
+
+            userPointUsecase.chargePoint(userId, amount);
+            return true;
+        } catch (BizException e) {
+            return false;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return false;
+        }
+    }
 }
