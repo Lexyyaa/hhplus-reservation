@@ -17,14 +17,65 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 @SpringBootTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ReservationConcurrencyTest {
 
     @Autowired
     private ReservationUsecase reservationUsecase;
 
-    @Autowired
-    private JPAReservationRepository reservationRepository;
+    private final ExecutorService executorService = Executors.newFixedThreadPool(3);
+    private final CountDownLatch latch = new CountDownLatch(3);
 
-    // 예약 동시성 테스트
+    @Test
+    @DisplayName("동시 예약 시도 - 한 명만 성공")
+    @Transactional
+    void 동시_예약_시도_한명만_성공() throws InterruptedException, ExecutionException {
+        Long concertScheduleId = 1L;
+        Long seatId = 5L;
+
+        List<Future<Boolean>> results = executorService.invokeAll(List.of(
+                () -> attemptReservation(1L, concertScheduleId, seatId),
+                () -> attemptReservation(2L, concertScheduleId, seatId),
+                () -> attemptReservation(3L, concertScheduleId, seatId)
+        ));
+
+        int successCount = 0;
+        int alreadyReservedCount = 0;
+
+        for (Future<Boolean> result : results) {
+            Boolean reservationResult = result.get();
+            if (reservationResult) {
+                successCount++;
+            } else {
+                alreadyReservedCount++;
+            }
+        }
+
+        assertThat(successCount).isEqualTo(1); // 성공 1건
+        assertThat(alreadyReservedCount).isEqualTo(2); // 실패 2건 
+    }
+
+    Boolean attemptReservation(Long userId, Long concertScheduleId, Long seatId) {
+        try {
+            latch.countDown();
+            latch.await();
+
+            reservationUsecase.reserve(
+                    concertScheduleId,
+                    new ReserveSeatRequest(userId, List.of(seatId))
+            );
+            System.out.println("예약 성공");
+            return true;
+        } catch (ObjectOptimisticLockingFailureException e) {
+            System.out.println("좌석 이미 예약됨");
+            return false;
+        } catch (BizException e) {
+            if (e.getErrorType() == ErrorType.SEAT_ALREADY_RESERVED) {
+                System.out.println("예약 실패");
+            }
+            return false;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return false;
+        }
+    }
 }
