@@ -8,6 +8,7 @@ import com.hhplus.reservation.support.error.ErrorType;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.nio.file.Watchable;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;

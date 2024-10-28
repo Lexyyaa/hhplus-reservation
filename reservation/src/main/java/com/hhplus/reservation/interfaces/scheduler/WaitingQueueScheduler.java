@@ -7,18 +7,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class WaitingQueueScheduler {
-    private final WaitingQueueService waitingQueueService;
+public class ReservationRestoreScheduler {
+	@Scheduled(fixedRate = 30000)
+	private final ReservationService reservationService;
 
-    @Scheduled(fixedRate = 30000)
-    public void checkProcessToken() {
-        waitingQueueService.updateProcessToken();
-    }
-
-    @Scheduled(fixedRate = 60000)
-    public void checkTokenExpire() {
-        waitingQueueService.updateExpireToken();
-    }
-
+	public void checkProcessToken() {
+		reservationService.restoreReservation();
+	}
 }
-
