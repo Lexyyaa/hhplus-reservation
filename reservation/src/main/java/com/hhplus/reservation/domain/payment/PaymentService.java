@@ -12,6 +12,9 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
 
+    /**
+     * 결제금액이 유효한지 검증한다.
+     */
     public void validatePayment(ReservationInfo reservation){
         Payment.isExpiredPayment(reservation.getReserveExpiredAt());
         Payment.isValidPrice(reservation.getTotalPrice());
@@ -20,6 +23,9 @@ public class PaymentService {
         Payment.isPaidPayment(isPaid);
     }
 
+    /**
+     * 결제내역을 저장한다.
+     */
     public Payment savePayment(Long userId,ReservationInfo reservation){
         Payment payment = Payment.builder()
                 .userId(userId)
@@ -30,5 +36,7 @@ public class PaymentService {
         return paymentRepository.save(payment);
     }
 }
+
+
 
 

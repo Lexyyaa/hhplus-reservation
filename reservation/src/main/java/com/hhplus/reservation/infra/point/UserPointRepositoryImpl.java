@@ -2,8 +2,9 @@ package com.hhplus.reservation.infra.point;
 
 import com.hhplus.reservation.domain.point.UserPoint;
 import com.hhplus.reservation.domain.point.UserPointRepository;
-import com.hhplus.reservation.support.error.CustomException;
+import com.hhplus.reservation.support.error.BizException;
 import com.hhplus.reservation.support.error.ErrorCode;
+import com.hhplus.reservation.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 @Repository
@@ -14,13 +15,13 @@ public class UserPointRepositoryImpl implements UserPointRepository {
     @Override
     public UserPoint findByUserId(Long userId) {
         return jpaRepository.findById(userId).orElseThrow(
-                () -> new CustomException(ErrorCode.INVALID_CHARGE_AMOUNT));
+                () -> new BizException(ErrorType.USER_NOT_FOUND));
     }
 
     @Override
     public UserPoint findByUserIdWithLock(Long userId) {
         return jpaRepository.findByUserIdWithLock(userId).orElseThrow(
-                () -> new CustomException(ErrorCode.USER_NOT_FOUND));
+                () -> new BizException(ErrorType.USER_NOT_FOUND));
     }
 
     @Override

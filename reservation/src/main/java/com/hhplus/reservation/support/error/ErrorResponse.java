@@ -9,13 +9,13 @@ public record ErrorResponse(
         String code,
         String message
 ) {
-    public static ResponseEntity<ErrorResponse> toResponseEntity(ErrorCode errorCode) {
+    public static ResponseEntity<ErrorResponse> toResponseEntity(ErrorType errorType) {
         return ResponseEntity
-                .status(errorCode.getHttpStatus())
+                .status(errorType.getErrorCode().getHttpStatus())
                 .body(ErrorResponse.builder()
-                        .status(errorCode.getHttpStatus().value())
-                        .code(errorCode.name())
-                        .message(errorCode.getMessage())
+                        .status(errorType.getErrorCode().getHttpStatus().value())
+                        .code(errorType.name())
+                        .message(errorType.getMessage())
                         .build());
     }
 }

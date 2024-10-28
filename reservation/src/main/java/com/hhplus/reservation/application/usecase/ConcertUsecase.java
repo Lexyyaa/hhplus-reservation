@@ -14,16 +14,20 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class ConcertUsecase {
-    private final WaitingQueueService queueService;
     private final ConcertService concertService;
-    public List<ConcertScheduleResponse> getSchedules(Long concertId, String token){
-        queueService.validateToken(token);
+
+    /**
+     * 예약가능한 일정을 반환한다.
+     */
+    public List<ConcertScheduleResponse> getSchedules(Long concertId){
         List<ConcertScheduleInfo> schedules = concertService.getSchedules(concertId);
         return ConcertScheduleInfo.convert(schedules);
     }
 
-    public List<ConcertSeatResponse> getSeats(Long scheduleId, String token){
-        queueService.validateToken(token);
+    /**
+     * 예약가능한 좌석목록을 반환한다.
+     */
+    public List<ConcertSeatResponse> getSeats(Long scheduleId){
         List<ConcertSeatInfo> seats = concertService.getSeats(scheduleId);
         return ConcertSeatInfo.convert(seats);
     }

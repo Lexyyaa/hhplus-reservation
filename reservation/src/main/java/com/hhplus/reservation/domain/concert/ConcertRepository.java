@@ -13,6 +13,8 @@ public interface ConcertRepository {
 
     void updateAvailableSeats(Long concertScheduledId, int seatsSize);
 
+    void restoreAvailableSeats(Long concertScheduledId, int seatsSize);
+
     Long getTotalPrice(List<Long> seatIds);
 
     Concert getConcert(Long concertId);

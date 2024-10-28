@@ -5,14 +5,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-//@Component
-//@RequiredArgsConstructor
-//public class ReservationRestoreScheduler {
-//
-//    private final ReservationService reservationService;
-//    @Scheduled(fixedRate = 60000)
-//    public void checkProcessToken() {
-//        reservationService.restoreReservation();
-//    }
-//}
-//
+@Component
+@RequiredArgsConstructor
+public class ReservationRestoreScheduler {
+
+	private final ReservationService reservationService;
+
+	@Scheduled(fixedRate = 10000)
+	public void checkProcessToken() {
+		reservationService.restoreReservation();
+	}
+}

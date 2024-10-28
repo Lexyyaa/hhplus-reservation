@@ -1,4 +1,4 @@
-package com.hhplus.reservation.interfaces.api;
+package com.hhplus.reservation.interfaces.api.controller;
 
 import com.hhplus.reservation.application.usecase.ReservationUsecase;
 import com.hhplus.reservation.interfaces.dto.reserve.ReserveResponse;
@@ -27,12 +27,10 @@ public class ReserveController {
     })
     @PostMapping("{concertScheduleId}/seat/{userId}")
     public ReserveResponse reserveSeat(
-            @RequestHeader("Authorization") String queueToken,
             @PathVariable("concertScheduleId") Long concertScheduleId,
-            @PathVariable("userId") Long userId,
             @RequestBody ReserveSeatRequest seatsRequest
     ) {
-        return reservationUsecase.reserve(concertScheduleId,userId,queueToken,seatsRequest);
+        return reservationUsecase.reserve(concertScheduleId,seatsRequest);
     }
 }
 

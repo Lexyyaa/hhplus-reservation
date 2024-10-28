@@ -1,4 +1,4 @@
-package com.hhplus.reservation.interfaces.api;
+package com.hhplus.reservation.interfaces.api.controller;
 
 import com.hhplus.reservation.application.usecase.ConcertUsecase;
 import com.hhplus.reservation.interfaces.dto.concert.ConcertScheduleResponse;
@@ -27,9 +27,8 @@ public class ConcertController {
     })
     @GetMapping("/avaliable/{concertId}")
     public List<ConcertScheduleResponse> getAvailableDate(
-            @PathVariable Long concertId,
-            @RequestHeader("Authorization") String queueToken) {
-        return concertUsecase.getSchedules(concertId,queueToken);
+            @PathVariable Long concertId) {
+        return concertUsecase.getSchedules(concertId);
     }
 
     @Operation(summary = "좌석 조회", description = "예약가능한 좌석을 조회합니다.")
@@ -40,8 +39,7 @@ public class ConcertController {
     })
     @GetMapping("/avaliable/seat/{concertScheduleId}")
     public List<ConcertSeatResponse> getAvailableSeat(
-            @PathVariable Long concertScheduleId,
-            @RequestHeader("Authorization") String queueToken) {
-        return concertUsecase.getSeats(concertScheduleId,queueToken);
+            @PathVariable Long concertScheduleId) {
+        return concertUsecase.getSeats(concertScheduleId);
     }
 }

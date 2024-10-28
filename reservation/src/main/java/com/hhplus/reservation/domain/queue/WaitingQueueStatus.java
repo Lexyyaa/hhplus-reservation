@@ -5,5 +5,5 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 
 public enum WaitingQueueStatus {
-    WAITING,PROGRESS,EXPIRED
+	WAITING, PROCESS, EXPIRED
 }

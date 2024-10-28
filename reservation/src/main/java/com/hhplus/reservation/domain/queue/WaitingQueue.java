@@ -2,8 +2,9 @@ package com.hhplus.reservation.domain.queue;
 
 import com.hhplus.reservation.domain.common.Timestamped;
 import com.hhplus.reservation.interfaces.dto.queue.WaitingQueueResponse;
-import com.hhplus.reservation.support.error.CustomException;
+import com.hhplus.reservation.support.error.BizException;
 import com.hhplus.reservation.support.error.ErrorCode;
+import com.hhplus.reservation.support.error.ErrorType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -82,7 +83,6 @@ public class WaitingQueue extends Timestamped {
         }
     }
 }
-
 
 
 

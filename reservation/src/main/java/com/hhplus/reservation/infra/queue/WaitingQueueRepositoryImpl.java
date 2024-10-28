@@ -14,7 +14,6 @@ import java.util.Optional;
 @Repository
 @RequiredArgsConstructor
 public class WaitingQueueRepositoryImpl implements WaitingQueueRepository {
-
     private final JPAWaitingQueueRepository jPAWaitingQueueRepository;
 
     @Override
@@ -41,17 +40,6 @@ public class WaitingQueueRepositoryImpl implements WaitingQueueRepository {
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
-    public boolean  validateToken(String token) {
-        Optional<WaitingQueue> optional = jPAWaitingQueueRepository.findInProcessQueue(token);
-        return optional.isPresent() ? true : false;
-    }
-
-    @Override
-    public void updateTokenDone(String token) {
-        jPAWaitingQueueRepository.updateTokenDone(token,LocalDateTime.now());
-    }
-
-    @Override
     public Long countProgressToken() {
         return jPAWaitingQueueRepository.countProgressTokens();
     }
@@ -60,6 +48,7 @@ public class WaitingQueueRepositoryImpl implements WaitingQueueRepository {
     public List<WaitingQueue> findNextToken() {
         return jPAWaitingQueueRepository.findNextTokens();
     }
+
 
     @Override
     public void updateProcessToken(List<Long> queueList, LocalDateTime processedAt, LocalDateTime expiredAt) {
@@ -70,4 +59,15 @@ public class WaitingQueueRepositoryImpl implements WaitingQueueRepository {
     public void updateExpireToken() {
         jPAWaitingQueueRepository.updateExpire(WaitingQueueStatus.EXPIRED,LocalDateTime.now());
     }
+    @Override
+    public boolean  validateToken(String token) {
+        Optional<WaitingQueue> optional = jPAWaitingQueueRepository.findInProcessQueue(token);
+        return optional.isPresent() ? true : false;
+    }
+
+    @Override
+    public void updateTokenDone(String token) {
+        jPAWaitingQueueRepository.updateTokenDone(token,LocalDateTime.now());
+    }
+
 }

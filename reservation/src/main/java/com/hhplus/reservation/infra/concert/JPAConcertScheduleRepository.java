@@ -16,4 +16,8 @@ public interface JPAConcertScheduleRepository extends JpaRepository<ConcertSched
     @Modifying
     @Query("UPDATE ConcertSchedule cs SET cs.availableSeatNum = cs.availableSeatNum - :count WHERE cs.id = :scheduleId")
     void updateAvailableSeats(@Param("scheduleId") Long scheduleId, @Param("count") int count);
+
+    @Modifying
+    @Query("UPDATE ConcertSchedule cs SET cs.availableSeatNum = cs.availableSeatNum + :count WHERE cs.id = :scheduleId")
+    void restoreAvailableSeats(@Param("scheduleId") Long scheduleId, @Param("count") int count);
 }

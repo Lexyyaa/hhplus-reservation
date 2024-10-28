@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface JPAReservationSeatRepository extends JpaRepository<ReservationSeat, Long> {
     @Modifying
-    @Query("DELETE FROM ReservationSeat rs WHERE rs.id IN :seatIds")
+    @Query("DELETE FROM ReservationSeat rs WHERE rs.seatId IN :seatIds")
     void deleteAllBySeatIds(@Param("seatIds") List<Long> seatIds);
 
     @Query("SELECT rs.seatId FROM ReservationSeat rs WHERE rs.reservationId IN :reservationId")

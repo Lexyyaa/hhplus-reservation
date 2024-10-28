@@ -1,8 +1,9 @@
 package com.hhplus.reservation.infra.concert;
 
 import com.hhplus.reservation.domain.concert.*;
-import com.hhplus.reservation.support.error.CustomException;
+import com.hhplus.reservation.support.error.BizException;
 import com.hhplus.reservation.support.error.ErrorCode;
+import com.hhplus.reservation.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Repository;
@@ -19,20 +20,12 @@ public class ConcertRepositoryImpl implements ConcertRepository {
 
     @Override
     public List<ConcertSchedule> getSchedules(Long concertId) {
-        List<ConcertSchedule> schedules = jpaConcertScheduleRepository.getSchedules(concertId);
-        if(schedules.isEmpty()){
-            throw new CustomException(ErrorCode.CONCERT_SCHEDULE_NOT_FOUND);
-        }
-        return schedules;
+        return jpaConcertScheduleRepository.getSchedules(concertId);
     }
 
     @Override
     public List<ConcertSeat> getSeats(Long concertScheduleId) {
-        List<ConcertSeat> seats = jpaConcertSeatRepository.getSeats(concertScheduleId);
-        if(seats.size() < 1){
-            throw new CustomException(ErrorCode.SEATS_NOT_FOUND);
-        }
-        return seats;
+        return jpaConcertSeatRepository.getSeats(concertScheduleId);
     }
 
     @Override
@@ -46,17 +39,22 @@ public class ConcertRepositoryImpl implements ConcertRepository {
 
         try {
             List<ConcertSeat> seats = jpaConcertSeatRepository.findAllById(seatIds);
-            seats.forEach(seat -> seat.setStatus(ConcertSeatStatus.UNAVALIABLE));
+            seats.forEach(seat -> seat.setStatus(ConcertSeatStatus.UNAVAILABLE));
 
             jpaConcertSeatRepository.saveAll(seats);
         } catch (OptimisticLockingFailureException e) {
-            throw new OptimisticLockingFailureException("이미 예약된 좌석입니다.");
+            throw new BizException(ErrorType.SEAT_ALREADY_RESERVED);
         }
     }
 
     @Override
     public void updateAvailableSeats(Long concertScheduledId, int seatsSize) {
         jpaConcertScheduleRepository.updateAvailableSeats(concertScheduledId,seatsSize);
+    }
+
+    @Override
+    public void restoreAvailableSeats(Long concertScheduledId, int seatsSize) {
+        jpaConcertScheduleRepository.restoreAvailableSeats(concertScheduledId,seatsSize);
     }
 
     @Override
@@ -67,13 +65,13 @@ public class ConcertRepositoryImpl implements ConcertRepository {
     @Override
     public Concert getConcert(Long concertId) {
         return jpaConcertRepository.findById(concertId).orElseThrow(
-                () -> new CustomException(ErrorCode.CONCERT_NOT_FOUND));
+                () -> new BizException(ErrorType.CONCERT_NOT_FOUND));
     }
 
     @Override
     public ConcertSchedule getConcertSchedule(Long concertScheduledId) {
         return jpaConcertScheduleRepository.findById(concertScheduledId).orElseThrow(
-                () -> new CustomException(ErrorCode.CONCERT_SCHEDULE_NOT_FOUND));
+                () -> new BizException(ErrorType.CONCERT_SCHEDULE_NOT_FOUND));
     }
 
     @Override

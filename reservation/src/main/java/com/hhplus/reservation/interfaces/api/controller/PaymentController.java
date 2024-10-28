@@ -1,4 +1,4 @@
-package com.hhplus.reservation.interfaces.api;
+package com.hhplus.reservation.interfaces.api.controller;
 
 import com.hhplus.reservation.application.usecase.PaymentUsecase;
 import com.hhplus.reservation.interfaces.dto.payment.PaymentResponse;
@@ -28,9 +28,8 @@ public class PaymentController {
     public PaymentResponse payment(
             @RequestHeader("Authorization") String queueToken,
             @PathVariable("reservationId") Long reservationId,
-            @PathVariable("userId") Long userId,
-            @RequestBody Long amount
+            @PathVariable("userId") Long userId
     ) {
-        return paymentUsecase.pay(queueToken,reservationId,userId,amount);
+        return paymentUsecase.pay(queueToken,reservationId,userId);
     }
 }

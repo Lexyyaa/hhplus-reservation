@@ -102,5 +102,4 @@ public class WaitingQueueService {
     public void updateTokenDone(String token){
         queueRepository.updateTokenDone(token);
     }
-
 }
