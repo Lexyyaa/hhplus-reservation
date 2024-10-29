@@ -7,7 +7,6 @@ import com.hhplus.reservation.interfaces.dto.reserve.ReserveResponse;
 import com.hhplus.reservation.interfaces.dto.reserve.ReserveSeatRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Request;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -19,7 +18,7 @@ public class ReservationUsecase {
     private final ConcertService concertService;
     private final ReservationService reservationService;
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
+    @Transactional
     public ReserveResponse reserve(Long concertScheduleId, ReserveSeatRequest request){
         List<Long> seats = request.getSeats();
         Long userId = request.getUserId();
