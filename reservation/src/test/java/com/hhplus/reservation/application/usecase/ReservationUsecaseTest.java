@@ -24,14 +24,8 @@ class ReservationUsecaseTest {
     @Autowired
     private JPAReservationRepository reservationRepository;
 
-    @BeforeEach
-    void setUp() {
-        // 테스트 전 초기 설정이 필요한 경우 이곳에 작성합니다.
-    }
-
     @AfterEach
     void tearDown() {
-        // 테스트 데이터 삭제 (테스트가 끝나면 모든 예약 삭제)
         reservationRepository.deleteAll();
     }
 
