@@ -53,13 +53,12 @@ class ReservationServiceTest {
         Long reservationId = 1L;
         Reservation reservation = Reservation.builder().id(reservationId).build();
 
-        when(reservationRepository.findByIdWithLock(reservationId)).thenReturn(reservation);
+        when(reservationRepository.findById(reservationId)).thenReturn(reservation);
 
         ReservationInfo result = reservationService.getReservation(reservationId);
 
         assertNotNull(result);
         assertEquals(reservationId, result.getId());
-        verify(reservationRepository).findByIdWithLock(reservationId);
     }
 
     @Test
@@ -67,7 +66,7 @@ class ReservationServiceTest {
     void 예약_내역이_존재하지_않음() {
         Long reservationId = 1L;
 
-        when(reservationRepository.findByIdWithLock(reservationId))
+        when(reservationRepository.findById(reservationId))
                 .thenThrow(new BizException(ErrorType.RESERVATION_NOT_FOUND));
 
         BizException exception = assertThrows(BizException.class,
@@ -79,23 +78,28 @@ class ReservationServiceTest {
     @Test
     @DisplayName("예약 확정 성공")
     void 예약_확정_성공() {
+        Long reservationId = 1L;
         ReservationInfo reservationInfo = ReservationInfo.builder()
-                .id(1L)
+                .id(reservationId)
                 .userId(1L)
                 .concertScheduleId(100L)
                 .totalPrice(150000L)
                 .build();
 
-        Reservation confirmedReservation = Reservation.create(reservationInfo);
-        confirmedReservation.setReserved(ReservationType.RESERVED);
-        confirmedReservation.setReservedAt(LocalDateTime.now());
+        Reservation confirmedReservation = Reservation.builder()
+                .id(reservationId)
+                .userId(reservationInfo.getUserId())
+                .concertScheduleId(reservationInfo.getConcertScheduleId())
+                .totalPrice(reservationInfo.getTotalPrice())
+                .reserved(ReservationType.RESERVED)
+                .reservedAt(LocalDateTime.now())
+                .build();
 
-        when(reservationRepository.save(any(Reservation.class))).thenReturn(confirmedReservation);
+        when(reservationRepository.confirmedReservationWithLock(reservationId)).thenReturn(confirmedReservation);
 
         ReservationInfo result = reservationService.confirmedReservation(reservationInfo);
 
         assertEquals(ReservationType.RESERVED, result.getReserved());
-        verify(reservationRepository).save(any(Reservation.class));
     }
 
     @Test
@@ -109,7 +113,7 @@ class ReservationServiceTest {
         List<Long> seatIds = List.of(1L, 2L);
 
         when(reservationRepository.findExpiredReservation()).thenReturn(List.of(expiredReservation));
-        when(reservationRepository.findByReservationId(expiredReservation.getId())).thenReturn(seatIds);
+        when(reservationRepository.findSeatsByReservationId(expiredReservation.getId())).thenReturn(seatIds);
 
         reservationService.restoreReservation();
 
