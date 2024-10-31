@@ -18,7 +18,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class PaymentUsecaseTest {
 
     @Autowired
@@ -29,7 +28,6 @@ class PaymentUsecaseTest {
 
     @AfterEach
     void tearDown() {
-        // 테스트 완료 후 결제 내역 삭제
         paymentRepository.deleteAll();
     }
 
@@ -37,33 +35,27 @@ class PaymentUsecaseTest {
     @DisplayName("결제 성공")
     @Transactional
     void 결제_성공() {
-        // given
         String token = "valid_token";
         Long reservationId = 1L;
         Long userId = 1L;
 
-        // when
         PaymentResponse response = paymentUsecase.pay(token, reservationId, userId);
 
-        // then
         assertThat(response).isNotNull();
         assertThat(response.getUserId()).isEqualTo(userId);
-        assertThat(response.getPrice()).isEqualTo(40000); // 예시 금액
+        assertThat(response.getPrice()).isEqualTo(40000);
     }
 
     @Test
     @DisplayName("이미 결제된 예약 예외")
     @Transactional
     void 이미_결제된_예약_예외() {
-        // given
         String token = "valid_token";
         Long reservationId = 1L;
         Long userId = 1L;
 
-        // 첫 번째 결제 성공
         paymentUsecase.pay(token, reservationId, userId);
 
-        // when & then
         BizException exception = assertThrows(BizException.class,
                 () -> paymentUsecase.pay(token, reservationId, userId));
 
@@ -74,10 +66,9 @@ class PaymentUsecaseTest {
     @DisplayName("포인트 부족 예외")
     @Transactional
     void 포인트_부족_예외() {
-        // given
         String token = "valid_token";
-        Long reservationId = 2L; // 예약된 금액이 유저의 포인트보다 큼
-        Long userId = 2L; // 포인트가 적은 유저
+        Long reservationId = 2L;
+        Long userId = 2L;
 
         BizException exception = assertThrows(BizException.class,
                 () -> paymentUsecase.pay(token, reservationId, userId));
@@ -88,10 +79,12 @@ class PaymentUsecaseTest {
     @Test
     @DisplayName("만료된 예약 예외")
     @Transactional
-    void 만료된_예약_예외() {
+    void 만료된_예약_예외() throws InterruptedException {
         String token = "valid_token";
         Long reservationId = 3L;
         Long userId = 3L;
+
+        Thread.sleep(1000);
 
         BizException exception = assertThrows(BizException.class,
                 () -> paymentUsecase.pay(token, reservationId, userId));

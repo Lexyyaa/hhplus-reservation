@@ -3,7 +3,6 @@ package com.hhplus.reservation.application.usecase;
 import com.hhplus.reservation.application.dto.ConcertScheduleInfo;
 import com.hhplus.reservation.application.dto.ConcertSeatInfo;
 import com.hhplus.reservation.domain.concert.ConcertService;
-import com.hhplus.reservation.domain.queue.WaitingQueueService;
 import com.hhplus.reservation.interfaces.dto.concert.ConcertScheduleResponse;
 import com.hhplus.reservation.interfaces.dto.concert.ConcertSeatResponse;
 import lombok.RequiredArgsConstructor;

@@ -3,7 +3,6 @@ package com.hhplus.reservation.support.error;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.boot.logging.LogLevel;
-import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor

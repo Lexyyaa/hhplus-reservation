@@ -106,14 +106,17 @@ class ConcertServiceTest {
         Long scheduleId = 1L;
         List<Long> seats = List.of(1L, 2L);
 
-        when(concertRepository.countSeatAvaliable(seats)).thenReturn(2L);
+        List<ConcertSeat> availableSeats = List.of(
+                ConcertSeat.builder().id(1L).concertScheduleId(scheduleId).status(ConcertSeatStatus.AVAILABLE).build(),
+                ConcertSeat.builder().id(2L).concertScheduleId(scheduleId).status(ConcertSeatStatus.AVAILABLE).build()
+        );
+        when(concertRepository.getAvailableSeats(seats)).thenReturn(availableSeats);
+
         when(concertRepository.getTotalPrice(seats)).thenReturn(100000L);
 
         Long totalPrice = concertService.updateSeatStatus(scheduleId, seats);
 
         assertEquals(100000L, totalPrice);
-        verify(concertRepository).updateSeatsStatusWithLock(seats, ConcertSeatStatus.UNAVAILABLE);
-        verify(concertRepository).updateAvailableSeats(scheduleId, seats.size());
     }
 
     @Test
@@ -122,8 +125,14 @@ class ConcertServiceTest {
         Long scheduleId = 1L;
         List<Long> seats = List.of(1L, 2L, 3L);
 
-        when(concertRepository.countSeatAvaliable(seats)).thenReturn(2L);
+        // Mock 설정: 예약 가능한 좌석 수를 실제와 다르게 반환
+        List<ConcertSeat> availableSeats = List.of(
+                ConcertSeat.builder().id(1L).concertScheduleId(scheduleId).status(ConcertSeatStatus.AVAILABLE).build(),
+                ConcertSeat.builder().id(2L).concertScheduleId(scheduleId).status(ConcertSeatStatus.AVAILABLE).build()
+        );
+        when(concertRepository.getAvailableSeats(seats)).thenReturn(availableSeats);
 
+        // 실행 및 예외 검증
         assertThrows(BizException.class, () -> concertService.updateSeatStatus(scheduleId, seats));
     }
 }

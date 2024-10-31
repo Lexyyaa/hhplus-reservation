@@ -23,30 +23,24 @@ class ConcertUsecaseTest {
     @Test
     @DisplayName("콘서트 일정 조회 성공")
     void 콘서트_일정_조회_성공() {
-        // given
         Long concertId = 1L;
 
-        // when
         List<ConcertScheduleResponse> schedules = concertUsecase.getSchedules(concertId);
 
-        // then
         assertThat(schedules).isNotEmpty();
-        assertThat(schedules.size()).isEqualTo(2);  // 해당 콘서트에 일정 2개 존재
+        assertThat(schedules.size()).isEqualTo(2);
         assertThat(schedules.get(0).getConcertId()).isEqualTo(concertId);
     }
 
     @Test
     @DisplayName("콘서트 좌석 조회 성공")
     void 콘서트_좌석_조회_성공() {
-        // given
         Long scheduleId = 1L;
 
-        // when
         List<ConcertSeatResponse> seats = concertUsecase.getSeats(scheduleId);
 
-        // then
         assertThat(seats).isNotEmpty();
-        assertThat(seats.size()).isEqualTo(6);  // 해당 일정에 좌석 6개 존재
+        assertThat(seats.size()).isEqualTo(6);
         assertThat(seats.get(0).getConcertScheduleId()).isEqualTo(scheduleId);
     }
 
@@ -56,7 +50,6 @@ class ConcertUsecaseTest {
 
         Long scheduleId = 4L;
 
-        // when & then
         BizException exception = assertThrows(BizException.class,
                 () -> concertUsecase.getSeats(scheduleId));
 
