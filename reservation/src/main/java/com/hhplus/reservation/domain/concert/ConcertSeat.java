@@ -3,7 +3,6 @@ package com.hhplus.reservation.domain.concert;
 import com.hhplus.reservation.application.dto.ConcertSeatInfo;
 import com.hhplus.reservation.domain.common.Timestamped;
 import com.hhplus.reservation.support.error.BizException;
-import com.hhplus.reservation.support.error.ErrorCode;
 import com.hhplus.reservation.support.error.ErrorType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -44,7 +43,7 @@ public class ConcertSeat extends Timestamped {
 
     @Version
     @Column(name = "version")
-    private Long version;
+    private long version;
 
     public static List<ConcertSeatInfo> convert(List<ConcertSeat> seats){
         return seats.stream()
@@ -59,7 +58,7 @@ public class ConcertSeat extends Timestamped {
                 .collect(Collectors.toList());
     }
 
-    public static void chkAllSeatAvaliable(int seatsSize,Long avaliableCnt){
+    public static void chkAllSeatAvaliable(int seatsSize,int avaliableCnt){
         if(seatsSize != avaliableCnt){
             throw new BizException(ErrorType.UNAVAILABLE_SEAT);
         }

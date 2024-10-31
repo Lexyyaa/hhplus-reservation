@@ -1,5 +1,12 @@
 package com.hhplus.reservation.application.usecase;
 
+import com.hhplus.reservation.domain.point.UserPoint;
+import com.hhplus.reservation.domain.point.UserPointRepository;
+import com.hhplus.reservation.domain.reserve.Reservation;
+import com.hhplus.reservation.domain.reserve.ReservationRepository;
+import com.hhplus.reservation.infra.point.UserPointRepositoryImpl;
+import com.hhplus.reservation.infra.reservation.JPAReservationRepository;
+import com.hhplus.reservation.infra.reservation.ReservationRepositoryImpl;
 import com.hhplus.reservation.support.error.BizException;
 import com.hhplus.reservation.support.error.ErrorType;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -20,55 +29,47 @@ class PaymentConcurrencyTest {
     @Autowired
     private PaymentUsecase paymentUsecase;
 
-    private final ExecutorService executorService = Executors.newFixedThreadPool(3);
-    private final CountDownLatch latch = new CountDownLatch(3);
+    @Autowired
+    private UserPointRepository  userPointRepository;
 
     @Test
-    @DisplayName("동시 결제 시도 - 한 명만 성공")
-    @Transactional
-    void 동시_결제_시도_한명만_성공() throws InterruptedException, ExecutionException {
+    @DisplayName("동시 결제 시도 - 예약 건 만큼만 포인트 차감")
+    void 동시_결제_시도_정상적인_포인트_차감() throws InterruptedException {
         String token = "valid_token";
         Long reservationId = 1L;
+        Long totalPrice = 40000L;
         Long userId = 1L;
-        
-        List<Future<Boolean>> results = executorService.invokeAll(List.of(
-                () -> attemptPayment(token, reservationId, userId),
-                () -> attemptPayment(token, reservationId, userId),
-                () -> attemptPayment(token, reservationId, userId)
-        ));
+        Long point = 40000L;
 
-        int successCount = 0;
-        int alreadyPaidCount = 0;
+        int attemptCount = 500;
+        ExecutorService executorService = Executors.newFixedThreadPool(attemptCount);
+        CountDownLatch latch = new CountDownLatch(attemptCount);
 
-        for (Future<Boolean> result : results) {
-            Boolean paymentResult = result.get();
-            if (paymentResult) {
-                successCount++;
-            } else {
-                alreadyPaidCount++;
-            }
+        AtomicInteger successCount = new AtomicInteger(0);
+        AtomicInteger failCount = new AtomicInteger(0);
+
+        for (int i = 0; i < attemptCount; i++) {
+            executorService.submit(() -> {
+                try {
+                    paymentUsecase.pay(token, reservationId, userId);
+                    successCount.incrementAndGet();
+                } catch (Exception e) {
+                    failCount.incrementAndGet();
+                } finally {
+                    latch.countDown();
+                }
+            });
         }
+        latch.await();
+        executorService.shutdown();
 
-        assertThat(successCount).isEqualTo(1); // 성콩카운트 1
-        assertThat(alreadyPaidCount).isEqualTo(2); // 실패카운트 2
-    }
+        UserPoint userPoint = userPointRepository.findByUserId(userId);
 
-    Boolean attemptPayment(String token, Long reservationId, Long userId) {
-        try {
-            latch.countDown();
-            latch.await();
+        assertThat(userPoint.getPoint()).isEqualTo(point-totalPrice);
 
-            paymentUsecase.pay(token, reservationId, userId);
+        assertThat(successCount.get()).isEqualTo(1);
 
-            return true;
-        } catch (BizException e) {
-            if (e.getErrorType() == ErrorType.PAYMENT_ALREADY_MADE) {
-                System.out.println("이미 결제된 예약");
-            }
-            return false;
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return false;
-        }
+        assertThat(failCount.get()).isEqualTo(attemptCount - 1);
     }
 }
+
