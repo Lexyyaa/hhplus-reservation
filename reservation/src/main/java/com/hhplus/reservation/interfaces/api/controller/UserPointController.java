@@ -1,4 +1,5 @@
 package com.hhplus.reservation.interfaces.api.controller;
+
 import com.hhplus.reservation.application.usecase.UserPointUsecase;
 import com.hhplus.reservation.interfaces.dto.point.UserPointResponse;
 import io.swagger.v3.oas.annotations.Operation;
