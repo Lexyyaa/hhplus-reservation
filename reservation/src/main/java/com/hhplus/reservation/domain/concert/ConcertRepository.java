@@ -22,4 +22,8 @@ public interface ConcertRepository {
     ConcertSchedule getConcertSchedule(Long concertScheduledId);
 
     void updateSeatsAvaliable(List<Long> seatIds, ConcertSeatStatus concertSeatStatus);
+
+    List<ConcertSeat> getAvailableSeats(List<Long> seatIds);
+
+    List<ConcertSeat> getAvailableSeatsWithLock(List<Long> seatIds);
 }

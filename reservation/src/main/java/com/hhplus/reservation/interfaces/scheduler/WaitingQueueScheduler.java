@@ -1,6 +1,5 @@
 package com.hhplus.reservation.interfaces.scheduler;
 
-import com.hhplus.reservation.domain.queue.WaitingQueueService;
 import com.hhplus.reservation.domain.reserve.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;

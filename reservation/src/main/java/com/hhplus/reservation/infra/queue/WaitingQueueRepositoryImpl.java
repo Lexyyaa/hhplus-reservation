@@ -4,7 +4,6 @@ import com.hhplus.reservation.domain.queue.WaitingQueue;
 import com.hhplus.reservation.domain.queue.WaitingQueueRepository;
 import com.hhplus.reservation.domain.queue.WaitingQueueStatus;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -36,8 +35,6 @@ public class WaitingQueueRepositoryImpl implements WaitingQueueRepository {
     public Long findMyWaitNum(LocalDateTime createdAt){
         return jPAWaitingQueueRepository.findMyWaitNum(createdAt);
     }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public Long countProgressToken() {

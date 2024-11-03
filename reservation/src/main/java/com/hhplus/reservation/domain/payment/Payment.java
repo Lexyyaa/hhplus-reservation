@@ -34,14 +34,12 @@ public class Payment extends Timestamped {
     private LocalDateTime paidAt;
 
     public static void isExpiredPayment(LocalDateTime reserveExpiredAt){
-        System.out.println("isExpiredPayment reserveExpiredAt : "+reserveExpiredAt);
         if (reserveExpiredAt.isBefore(LocalDateTime.now())) {
             throw new BizException(ErrorType.PAYMENT_EXPIRED);
         }
     }
 
     public static void isValidPrice(Long totalPrice){
-        System.out.println("isExpiredPayment totalPrice : "+totalPrice);
         if(totalPrice < 0){
             throw new BizException(ErrorType.INVALID_PAYMENT_AMOUNT);
         }

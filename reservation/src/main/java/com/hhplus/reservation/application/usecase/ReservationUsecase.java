@@ -5,7 +5,6 @@ import com.hhplus.reservation.domain.concert.ConcertService;
 import com.hhplus.reservation.domain.reserve.ReservationService;
 import com.hhplus.reservation.interfaces.dto.reserve.ReserveResponse;
 import com.hhplus.reservation.interfaces.dto.reserve.ReserveSeatRequest;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +17,9 @@ public class ReservationUsecase {
     private final ConcertService concertService;
     private final ReservationService reservationService;
 
-    @Transactional
+    /**
+     * 선택한 죄석을 예약한다.(임시예약)
+     */
     public ReserveResponse reserve(Long concertScheduleId, ReserveSeatRequest request){
         List<Long> seats = request.getSeats();
         Long userId = request.getUserId();

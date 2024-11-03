@@ -53,8 +53,9 @@ public class ConcertService {
      */
     @Transactional
     public Long updateSeatStatus(Long concertScheduleId,List<Long> seats){
-        Long avaliableCnt = concertRepository.countSeatAvaliable(seats);
-        ConcertSeat.chkAllSeatAvaliable(seats.size(),avaliableCnt);
+
+        List<ConcertSeat> avaliableSeats = concertRepository.getAvailableSeats(seats);
+        ConcertSeat.chkAllSeatAvaliable(seats.size(),avaliableSeats.size());
 
         concertRepository.updateSeatsStatusWithLock(seats, ConcertSeatStatus.UNAVAILABLE);
         concertRepository.updateAvailableSeats(concertScheduleId, seats.size());

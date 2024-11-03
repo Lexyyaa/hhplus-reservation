@@ -3,16 +3,13 @@ package com.hhplus.reservation.domain.queue;
 import com.hhplus.reservation.domain.common.Timestamped;
 import com.hhplus.reservation.interfaces.dto.queue.WaitingQueueResponse;
 import com.hhplus.reservation.support.error.BizException;
-import com.hhplus.reservation.support.error.ErrorCode;
 import com.hhplus.reservation.support.error.ErrorType;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.nio.file.Watchable;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Getter

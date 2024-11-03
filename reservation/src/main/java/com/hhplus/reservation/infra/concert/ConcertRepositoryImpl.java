@@ -2,7 +2,6 @@ package com.hhplus.reservation.infra.concert;
 
 import com.hhplus.reservation.domain.concert.*;
 import com.hhplus.reservation.support.error.BizException;
-import com.hhplus.reservation.support.error.ErrorCode;
 import com.hhplus.reservation.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -30,13 +29,17 @@ public class ConcertRepositoryImpl implements ConcertRepository {
 
     @Override
     public Long countSeatAvaliable(List<Long> seats) {
-        List<Long> seatIds = List.of();
+
+        List<ConcertSeat> seatList = jpaConcertSeatRepository.countSeats(seats);
+        for(ConcertSeat seat : seatList) {
+            System.out.println(seat.getId() + " , "+seat.getStatus());
+        }
+
         return jpaConcertSeatRepository.countSeatAvaliable(seats);
     }
 
     @Override
     public void updateSeatsStatusWithLock(List<Long> seatIds, ConcertSeatStatus status) {
-
         try {
             List<ConcertSeat> seats = jpaConcertSeatRepository.findAllById(seatIds);
             seats.forEach(seat -> seat.setStatus(ConcertSeatStatus.UNAVAILABLE));
@@ -45,6 +48,10 @@ public class ConcertRepositoryImpl implements ConcertRepository {
         } catch (OptimisticLockingFailureException e) {
             throw new BizException(ErrorType.SEAT_ALREADY_RESERVED);
         }
+    }
+
+    public List<ConcertSeat> getAvailableSeatsWithLock(List<Long> seatIds) {
+        return jpaConcertSeatRepository.findAvailableSeatsByIdsWithLock(seatIds);
     }
 
     @Override
@@ -77,6 +84,11 @@ public class ConcertRepositoryImpl implements ConcertRepository {
     @Override
     public void updateSeatsAvaliable(List<Long> seatIds, ConcertSeatStatus concertSeatStatus) {
         jpaConcertSeatRepository.updateSeatsAvaliable(seatIds,concertSeatStatus);
+    }
+
+    @Override
+    public List<ConcertSeat> getAvailableSeats(List<Long> seatIds) {
+        return jpaConcertSeatRepository.findAvailableSeatsByIds(seatIds);
     }
 
 }

@@ -24,10 +24,8 @@ public class TokenInterceptor implements HandlerInterceptor {
         if(!isValidToken){
             log.warn("검증되지않은 토큰입니다.");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        } // 코두리뷰
+        }
 
         return isValidToken;
     }
-
-    // after handle에서 로그를찍을까?!?! 그게맞을지도!??!
 }

@@ -44,6 +44,10 @@ public class Reservation extends Timestamped {
     @Column(name = "reserved_at")
     private LocalDateTime reservedAt;
 
+    @Version
+    @Column(name = "version")
+    private long version;
+
     @Transient
     List<ReservationSeat> seats;
 

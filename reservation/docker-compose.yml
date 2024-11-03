@@ -1,0 +1,20 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  redis:
+    image: redis:latest
+    container_name: redis-server
+    ports:
+      - "6379:6379"   # 로컬 포트 6379와 Redis 컨테이너 포트를 연결
+    volumes:
+      - redis-data:/data   # Redis 데이터 영구 저장
+    networks:
+      - redis-network
+
+networks:
+  redis-network:
+    driver: bridge
+
+volumes:
+  redis-data:
