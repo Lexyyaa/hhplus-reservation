@@ -4,9 +4,11 @@ import com.hhplus.reservation.interfaces.dto.queue.WaitingQueueResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
@@ -15,19 +17,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class WaitingQueueServiceTest {
-
 
     @Mock
     private WaitingQueueRepository waitingQueueRepository;
 
     @InjectMocks
     private WaitingQueueService waitingQueueService;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     @DisplayName("성공적으로 토큰을 생성한다.")

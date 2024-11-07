@@ -40,7 +40,7 @@ public class UserPointServiceWithDLockTest {
 
         Long userId = 1L;
         Long amount = 5000L;
-        UserPoint userPoint = new UserPoint(userId,"유저1",1000L,1);
+        UserPoint userPoint = new UserPoint(userId,"유저1",1000L);
 
         when(redissonClient.getLock(anyString())).thenReturn(rLock);
         when(rLock.tryLock(5, 10, TimeUnit.SECONDS)).thenReturn(true);
