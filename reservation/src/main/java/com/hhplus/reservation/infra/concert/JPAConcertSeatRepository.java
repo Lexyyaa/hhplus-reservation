@@ -40,6 +40,8 @@ public interface JPAConcertSeatRepository extends JpaRepository<ConcertSeat, Lon
     @Query("select cs FROM ConcertSeat cs WHERE cs.status = 'AVAILABLE' AND cs.id IN :seatIds")
     List<ConcertSeat>findAvailableSeatsByIds(@Param("seatIds") List<Long> seatIds);
 
+    @Query("SELECT COUNT(cs) FROM ConcertSeat cs WHERE cs.concertScheduleId = :concertScheduleId AND cs.status = 'AVAILABLE'")
+    int getRemainingSeats(Long concertScheduleId);
 
 }
 
