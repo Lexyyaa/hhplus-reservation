@@ -4,6 +4,8 @@ import com.hhplus.reservation.domain.concert.ConcertSeatStatus;
 import com.hhplus.reservation.interfaces.dto.concert.ConcertScheduleResponse;
 import lombok.*;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,7 +15,12 @@ import java.util.stream.Collectors;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ConcertScheduleInfo {
+@EqualsAndHashCode
+public class ConcertScheduleInfo implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     Long id;
     Long concertId;
     LocalDate performDate;
@@ -33,5 +40,17 @@ public class ConcertScheduleInfo {
                         .build()
                 )
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public String toString() {
+        return "ConcertScheduleInfo{" +
+                "id=" + id +
+                ", concertId=" + concertId +
+                ", performDate=" + performDate +
+                ", totalSeat=" + totalSeat +
+                ", availableSeatNum=" + availableSeatNum +
+                ", availableStatus=" + availableStatus +
+                '}';
     }
 }
