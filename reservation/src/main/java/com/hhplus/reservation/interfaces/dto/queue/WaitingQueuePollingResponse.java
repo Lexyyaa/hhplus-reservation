@@ -11,5 +11,4 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class WaitingQueuePollingResponse {
     private Long waitNum;
-    private LocalDateTime createdAt;
 }
