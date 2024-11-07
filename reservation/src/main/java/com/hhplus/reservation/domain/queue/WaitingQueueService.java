@@ -4,12 +4,14 @@ import com.hhplus.reservation.interfaces.dto.queue.WaitingQueuePollingResponse;
 import com.hhplus.reservation.interfaces.dto.queue.WaitingQueueResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class WaitingQueueService {
@@ -21,6 +23,7 @@ public class WaitingQueueService {
      */
     @Transactional
     public WaitingQueueResponse getOrCreateQueueToken(Long userId) {
+
         Optional<WaitingQueue> optionalQueue = queueRepository.findWaitingQueueByUserId(userId);
 
         if (optionalQueue.isPresent()) {
@@ -33,12 +36,10 @@ public class WaitingQueueService {
                 .token(token)
                 .status(WaitingQueueStatus.WAITING)
                 .build();
-
-
+        log.info("Creating queue token: {}", token);
         WaitingQueue newQueue = queueRepository.save(queue);
         return WaitingQueue.convert(newQueue);
     }
-
 
     /**
      * 나의 대기번호를 조회한다.
@@ -47,11 +48,10 @@ public class WaitingQueueService {
         Optional<WaitingQueue> optional = queueRepository.findWaitingQueueByToken(userId, queueToken);
 
         WaitingQueue.checkToken(optional.isPresent());
-
         Long waitNum = queueRepository.findMyWaitNum(optional.get().getCreatedAt());
+        log.info("Waiting num: {}", waitNum);
         return WaitingQueuePollingResponse.builder()
-                .waitNum(waitNum)
-                .createdAt(optional.get().getCreatedAt()).build();
+                .waitNum(waitNum).build();
     }
 
 
@@ -88,11 +88,15 @@ public class WaitingQueueService {
      * 토큰이 유효한지 검증한다.
      */
     public void validateToken(String queueToken){
-
-        System.out.println("validateToken queueToken : "+queueToken);
-
         boolean isValidToken = queueRepository.validateToken(queueToken);
         WaitingQueue.validateToken(isValidToken);
+    }
+
+    /**
+     * 토큰이 유효한지 검증한다.
+     */
+    public boolean isValidToken(String queueToken){
+        return queueRepository.validateToken(queueToken);
     }
 
     /**
@@ -102,4 +106,5 @@ public class WaitingQueueService {
     public void updateTokenDone(String token){
         queueRepository.updateTokenDone(token);
     }
+
 }
