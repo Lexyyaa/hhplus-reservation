@@ -1,0 +1,12 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate.dialect: org.hibernate.dialect.MySQLDialect  # Hibernate 설정만 남겨둠
+  sql:
+    init:
+      mode: never
+logging:
+  level:
+    root: INFO
