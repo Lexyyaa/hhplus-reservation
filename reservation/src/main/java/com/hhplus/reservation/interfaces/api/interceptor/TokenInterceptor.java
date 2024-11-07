@@ -1,6 +1,6 @@
 package com.hhplus.reservation.interfaces.api.interceptor;
 
-import com.hhplus.reservation.domain.queue.WaitingQueueRepository;
+import com.hhplus.reservation.domain.queue.WaitingQueueRedisService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -13,13 +13,14 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @RequiredArgsConstructor
 public class TokenInterceptor implements HandlerInterceptor {
 
-    private final WaitingQueueRepository queueRepository;
+    private final WaitingQueueRedisService waitingQueueService ;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
         String queueToken = request.getHeader("Authorization");
 
-        boolean isValidToken = queueRepository.validateToken(queueToken);
+        boolean isValidToken = waitingQueueService.isValidToken(queueToken);
 
         if(!isValidToken){
             log.warn("검증되지않은 토큰입니다.");

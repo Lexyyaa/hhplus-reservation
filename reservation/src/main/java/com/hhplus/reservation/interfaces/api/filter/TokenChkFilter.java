@@ -20,16 +20,15 @@ public class TokenChkFilter implements Filter {
         String token = httpRequest.getHeader("Authorization");
         String path = httpRequest.getRequestURI();
 
-        // 이따 여기 지우자
         if (httpRequest.getRequestURI().startsWith("/h2-console")) {
-            chain.doFilter(request, response); 
+            chain.doFilter(request, response);
             return;
         }
 
-        if (path.contains("/api/queue/token")) { 
+        if (path.contains("/api/queue/token")) {
             chain.doFilter(request, response);
             return;
-        } 
+        }
 
         if (token == null || token.isEmpty()) {
             httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
