@@ -8,8 +8,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.redisson.remote.ResponseEntry;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,9 +27,9 @@ public class ConcertController {
             @ApiResponse(responseCode = "400", description = "콘서트 정보가 존재하지 않습니다.")
     })
     @GetMapping("/avaliable/{concertId}")
-    public ResponseEntity<List<ConcertScheduleResponse>> getAvailableDate(
+    public List<ConcertScheduleResponse> getAvailableDate(
             @PathVariable Long concertId) {
-        return ResponseEntity.ok(concertUsecase.getSchedules(concertId));
+        return concertUsecase.getSchedules(concertId);
     }
 
     @Operation(summary = "좌석 조회", description = "예약가능한 좌석을 조회합니다.")
