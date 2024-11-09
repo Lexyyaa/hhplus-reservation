@@ -32,33 +32,6 @@ public class UserPointService {
         return UserPoint.convert(userPoint);
     }
 
-    public UserPointInfo chargePointWithDLock(Long userId, Long amount) {
-        UserPoint.isValidAmount(amount);
-
-        String lockKey = "userPointLock:" + userId;
-        RLock lock = redissonClient.getLock(lockKey);
-
-        try {
-            if (lock.tryLock(5, 10, TimeUnit.SECONDS)) {
-                log.info("UserPoint lock start");
-                try {
-                    UserPoint currUserPoint = userPointRepository.findByUserId(userId);
-                    currUserPoint.chargePoint(amount);
-                    UserPoint userPoint = userPointRepository.save(currUserPoint);
-                    return UserPoint.convert(userPoint);
-                } finally {
-                    log.info("UserPoint unLock");
-                    lock.unlock();
-                }
-            } else {
-                throw new IllegalStateException("락 획득 실패");
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new IllegalStateException("인터럽트 발생", e);
-        }
-    }
-
     /**
      * 포인트를 조회한다.
      */

@@ -26,8 +26,8 @@ public class WaitingQueueController {
             @ApiResponse(responseCode = "400", description = "유효하지 않은 토큰입니다.")
     })
     @PostMapping("/token/{userId}")
-    public ResponseEntity<WaitingQueueResponse> issueToken(@PathVariable("userId") Long userId) {
-        return ResponseEntity.ok(queueService.getOrCreateQueueToken(userId));
+    public WaitingQueueResponse issueToken(@PathVariable("userId") Long userId) {
+        return queueService.getOrCreateQueueToken(userId);
     }
 
     @Operation(summary = "폴링", description = "대기번호를 반환합니다.")
@@ -37,7 +37,7 @@ public class WaitingQueueController {
             @ApiResponse(responseCode = "400", description = "유효하지 않은 토큰입니다.")
     })
     @GetMapping("/polling/{userId}")
-    public ResponseEntity<WaitingQueuePollingResponse> polling(@PathVariable("userId") Long userId, @RequestHeader("Authorization") String queueToken) {
-        return ResponseEntity.ok(queueService.getQueueToken(queueToken));
+    public WaitingQueuePollingResponse polling(@PathVariable("userId") Long userId, @RequestHeader("Authorization") String queueToken) {
+        return queueService.getQueueToken(queueToken);
     }
 }
