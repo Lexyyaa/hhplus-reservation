@@ -5,22 +5,36 @@ import com.hhplus.reservation.application.dto.ConcertScheduleInfo;
 import com.hhplus.reservation.application.dto.ConcertSeatInfo;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ConcertService {
+
+    private final ConcertCacheRepository concertCacheRepository;
     private final ConcertRepository concertRepository;
 
     /**
-     * 선택한 콘서트의 예약가능한 일정목록을 반환한다.
+     * 선택한 콘서트의 예약 가능한 일정 목록을 반환한다.
      */
-    public List<ConcertScheduleInfo> getSchedules(Long concertId){
+    public List<ConcertScheduleInfo> getSchedules(Long concertId) {
+        List<ConcertScheduleInfo> cachedSchedules = concertCacheRepository.getCachedSchedules(concertId);
+
+        if (cachedSchedules != null && !cachedSchedules.isEmpty()) {
+            return cachedSchedules;
+        }
+
         List<ConcertSchedule> schedules = concertRepository.getSchedules(concertId);
         ConcertSchedule.isEmptyScheduleList(schedules);
-        return ConcertSchedule.convert(schedules);
+        List<ConcertScheduleInfo> scheduleInfoList = ConcertSchedule.convert(schedules);
+
+        concertCacheRepository.cacheSchedules(concertId, scheduleInfoList);
+
+        return scheduleInfoList;
     }
 
     /**
@@ -61,7 +75,14 @@ public class ConcertService {
         concertRepository.updateAvailableSeats(concertScheduleId, seats.size());
 
         Long totalPrice = concertRepository.getTotalPrice(seats);
+
+        int remainingSeats = concertRepository.getRemainingSeats(concertScheduleId);
+        if (remainingSeats == 0) {
+            concertRepository.updateScheduleStatus(concertScheduleId, ConcertScheduleStatus.UNAVAILABLE); // 예약 불가 상태로 업데이트
+        }
+
+        concertCacheRepository.evictSchedulesCache(concertScheduleId);
+
         return totalPrice;
     }
-
 }

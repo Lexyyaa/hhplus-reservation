@@ -55,6 +55,16 @@ public class ConcertRepositoryImpl implements ConcertRepository {
     }
 
     @Override
+    public int getRemainingSeats(Long concertScheduleId) {
+        return jpaConcertSeatRepository.getRemainingSeats(concertScheduleId);
+    }
+
+    @Override
+    public void updateScheduleStatus(Long concertScheduleId, ConcertScheduleStatus status) {
+        jpaConcertScheduleRepository.updateScheduleStatus(concertScheduleId,status);
+    }
+
+    @Override
     public void updateAvailableSeats(Long concertScheduledId, int seatsSize) {
         jpaConcertScheduleRepository.updateAvailableSeats(concertScheduledId,seatsSize);
     }

@@ -1,6 +1,7 @@
 package com.hhplus.reservation.infra.concert;
 
 import com.hhplus.reservation.domain.concert.ConcertSchedule;
+import com.hhplus.reservation.domain.concert.ConcertScheduleStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -20,4 +21,9 @@ public interface JPAConcertScheduleRepository extends JpaRepository<ConcertSched
     @Modifying
     @Query("UPDATE ConcertSchedule cs SET cs.availableSeatNum = cs.availableSeatNum + :count WHERE cs.id = :scheduleId")
     void restoreAvailableSeats(@Param("scheduleId") Long scheduleId, @Param("count") int count);
+
+    @Modifying
+    @Query("UPDATE ConcertSchedule cs SET cs.availableStatus = :status WHERE cs.id = :concertScheduleId")
+    void updateScheduleStatus(Long concertScheduleId, ConcertScheduleStatus status);
+
 }
