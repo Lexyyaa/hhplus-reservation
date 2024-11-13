@@ -20,10 +20,10 @@ import static org.mockito.Mockito.*;
 public class WaitingQueueRedisServiceTest {
 
     @InjectMocks
-    private WaitingQueueRedisService waitingQueueRedisService;
+    private WaitingQueueService waitingQueueRedisService;
 
     @Spy
-    private WaitingQueueRedisRepository waitingQueueRedisRepository;
+    private WaitingQueueRepository waitingQueueRedisRepository;
 
     private final String testTokenForUserId1 = "MV9fYzRjYTQyMzgtYTBiOS0zMzgyLThkY2MtNTA5YTZmNzU4NDli";
 

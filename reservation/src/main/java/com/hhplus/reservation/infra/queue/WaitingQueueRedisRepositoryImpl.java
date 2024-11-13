@@ -1,6 +1,6 @@
 package com.hhplus.reservation.infra.queue;
 
-import com.hhplus.reservation.domain.queue.WaitingQueueRedisRepository;
+import com.hhplus.reservation.domain.queue.WaitingQueueRepository;
 import com.hhplus.reservation.support.error.BizException;
 import com.hhplus.reservation.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Repository
 @RequiredArgsConstructor
-public class WaitingQueueRedisRepositoryImpl implements WaitingQueueRedisRepository {
+public class WaitingQueueRedisRepositoryImpl implements WaitingQueueRepository {
 
     private static final String WAIT_QUEUE_KEY = "WAITING_QUEUE";
     private static final String ACTIVE_PREFIX = "ACTIVE:";

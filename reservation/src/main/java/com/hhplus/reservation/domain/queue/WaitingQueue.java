@@ -1,15 +1,12 @@
 package com.hhplus.reservation.domain.queue;
 
-import com.hhplus.reservation.domain.common.Timestamped;
 import com.hhplus.reservation.interfaces.dto.queue.WaitingQueueResponse;
 import com.hhplus.reservation.support.error.BizException;
 import com.hhplus.reservation.support.error.ErrorType;
-import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.Base64;
-import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -17,37 +14,15 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "waiting_queue")
-public class WaitingQueue extends Timestamped {
+public class WaitingQueue {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
-
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
-
-    @Column(name = "token", nullable = false, unique = true)
     private String token;
 
-    @Column(name = "status")
-    @Enumerated(EnumType.STRING)
-    private WaitingQueueStatus status;
-
-    @Column(name = "processed_at")
-    private LocalDateTime processedAt;
-
-    @Column(name = "expired_at")
     private LocalDateTime expiredAt;
 
     public static WaitingQueueResponse convert (WaitingQueue queue){
         return WaitingQueueResponse.builder()
-                .userId(queue.getUserId())
-                .token(queue.getToken())
-                .status(queue.getStatus())
-                .createdAt(queue.getCreatedAt()).build();
+                .token(queue.getToken()).build();
     }
 
     public static String makeToken(Long userId) {
@@ -56,39 +31,10 @@ public class WaitingQueue extends Timestamped {
         return Base64.getEncoder().encodeToString(tokenStr.getBytes());
     }
 
-    public static void validateToken(boolean isValidToken){
-        if(!isValidToken){
-            throw new BizException(ErrorType.VALIDATED_TOKEN);
-        }
-    }
-
-    public static void checkToken(boolean isPresentToken){
-        if(!isPresentToken){
-            throw new BizException(ErrorType.TOKEN_NOT_FOUND);
-        }
-    }
-
-    public static void isValidCount(Long currProgressCnt) {
+    public static void isValidCount(long currProgressCnt) {
         if (currProgressCnt >= 5) {
             throw new BizException(ErrorType.MAX_PROGRESS_EXCEEDED);
         }
     }
-
-    public static void isValidTokenList(List<WaitingQueue> waitingQueues) {
-        if (waitingQueues == null || waitingQueues.isEmpty()) {
-            throw new BizException(ErrorType.EMPTY_QUEUE);
-        }
-    }
 }
-
-
-
-
-
-
-
-
-
-
-
 

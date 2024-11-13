@@ -20,10 +20,10 @@ import static org.junit.jupiter.api.Assertions.*;
 public class WaitingQueueRedisServiceIntegrationTest extends TestContainersConfig {
 
     @Autowired
-    private WaitingQueueRedisService waitingQueueRedisService;
+    private WaitingQueueService waitingQueueRedisService;
 
     @Autowired
-    private WaitingQueueRedisRepository waitingQueueRedisRepository;
+    private WaitingQueueRepository waitingQueueRedisRepository;
 
     @Autowired
     private RedisTemplate<String, String> redisTemplate;

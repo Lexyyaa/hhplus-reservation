@@ -1,6 +1,6 @@
 package com.hhplus.reservation.interfaces.api.interceptor;
 
-import com.hhplus.reservation.domain.queue.WaitingQueueRedisService;
+import com.hhplus.reservation.domain.queue.WaitingQueueService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @RequiredArgsConstructor
 public class TokenInterceptor implements HandlerInterceptor {
 
-    private final WaitingQueueRedisService waitingQueueService ;
+    private final WaitingQueueService waitingQueueService ;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {

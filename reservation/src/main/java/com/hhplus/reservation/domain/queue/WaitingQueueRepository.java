@@ -1,28 +1,22 @@
 package com.hhplus.reservation.domain.queue;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 public interface WaitingQueueRepository {
 
-    Optional<WaitingQueue> findWaitingQueueByUserId(Long userId);
+    Double findWaitingQueueByToken(String token);
 
-    WaitingQueue save(WaitingQueue queueToken);
+    String addWaitingQueue(String token);
 
-    Optional<WaitingQueue> findWaitingQueueByToken(Long userId,String queueToken);
+    Long getWaitNum(String token);
 
-    Long findMyWaitNum(LocalDateTime createdAt);
+    Long getActiveCnt();
 
-    boolean validateToken(String token);
+    List<String> popWaitingQueueToken(int popCnt);
 
-    void updateTokenDone(String token);
+    String getActiveToken(String token);
 
-    Long countProgressToken();
+    void addActiveQueue(List<String> tokenList);
 
-    List<WaitingQueue> findNextToken();
-
-    void updateProcessToken(List<Long> queueList, LocalDateTime processedAt, LocalDateTime expiredAt);
-
-    void updateExpireToken();
+    boolean deleteToken(String token) ;
 }

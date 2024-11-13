@@ -7,104 +7,72 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class WaitingQueueService {
 
-    private final WaitingQueueRepository queueRepository;
+    private final WaitingQueueRepository waitingQueueRedisRepository;
 
     /**
      * 토큰을 발급한다(대기열 진입)
      */
-    @Transactional
     public WaitingQueueResponse getOrCreateQueueToken(Long userId) {
+        String token = WaitingQueue.makeToken(userId);
+        Double score = waitingQueueRedisRepository.findWaitingQueueByToken(token);
 
-        Optional<WaitingQueue> optionalQueue = queueRepository.findWaitingQueueByUserId(userId);
-
-        if (optionalQueue.isPresent()) {
-            return WaitingQueue.convert(optionalQueue.get());
+        if (score == null) {
+            waitingQueueRedisRepository.addWaitingQueue(token);
         }
 
-        String token = WaitingQueue.makeToken(userId);
         WaitingQueue queue = WaitingQueue.builder()
-                .userId(userId)
                 .token(token)
-                .status(WaitingQueueStatus.WAITING)
                 .build();
-        log.info("Creating queue token: {}", token);
-        WaitingQueue newQueue = queueRepository.save(queue);
-        return WaitingQueue.convert(newQueue);
+        return WaitingQueue.convert(queue);
     }
 
     /**
      * 나의 대기번호를 조회한다.
      */
-    public WaitingQueuePollingResponse getQueueToken(Long userId, String queueToken) {
-        Optional<WaitingQueue> optional = queueRepository.findWaitingQueueByToken(userId, queueToken);
-
-        WaitingQueue.checkToken(optional.isPresent());
-        Long waitNum = queueRepository.findMyWaitNum(optional.get().getCreatedAt());
-        log.info("Waiting num: {}", waitNum);
+    public WaitingQueuePollingResponse getQueueToken(String queueToken) {
+        Long waitNum = waitingQueueRedisRepository.getWaitNum(queueToken);
         return WaitingQueuePollingResponse.builder()
                 .waitNum(waitNum).build();
     }
 
-
     /**
      * 토큰을 실행처리한다.
      */
-    @Transactional
-    public void updateProcessToken() {
-        Long currProgressCnt = queueRepository.countProgressToken();
+    public void updateActiveToken() {
+        long currActiveCnt = waitingQueueRedisRepository.getActiveCnt();
+        log.info("currActiveCnt : {} ",currActiveCnt);
 
-        WaitingQueue.isValidCount(currProgressCnt);
+        WaitingQueue.isValidCount(currActiveCnt);
 
-        List<WaitingQueue> nextTokens = queueRepository.findNextToken();
+        int remainCnt = 5 - (int) currActiveCnt;
 
-        WaitingQueue.isValidTokenList(nextTokens);
+        List<String> tokenList = new ArrayList<>();
+        tokenList = waitingQueueRedisRepository.popWaitingQueueToken(remainCnt);
 
-        List<Long> queueList = nextTokens.stream()
-                .map(WaitingQueue::getId)
-                .collect(Collectors.toList());
-
-        LocalDateTime currTime = LocalDateTime.now();
-        queueRepository.updateProcessToken(queueList,currTime, currTime.plusMinutes(10));
-    }
-
-    /**
-     * 토큰을 만료처리한다.
-     */
-    @Transactional
-    public void updateExpireToken() {
-        queueRepository.updateExpireToken();
-    }
-
-    /**
-     * 토큰이 유효한지 검증한다.
-     */
-    public void validateToken(String queueToken){
-        boolean isValidToken = queueRepository.validateToken(queueToken);
-        WaitingQueue.validateToken(isValidToken);
+        waitingQueueRedisRepository.addActiveQueue(tokenList);
     }
 
     /**
      * 토큰이 유효한지 검증한다.
      */
     public boolean isValidToken(String queueToken){
-        return queueRepository.validateToken(queueToken);
+        String token = waitingQueueRedisRepository.getActiveToken(queueToken);
+        return token == null? false: true ;
     }
 
     /**
      * 토큰을 완료처리한다.
      */
     @Transactional
-    public void updateTokenDone(String token){
-        queueRepository.updateTokenDone(token);
+    public boolean deleteToken(String token){
+       return waitingQueueRedisRepository.deleteToken(token);
     }
-
 }

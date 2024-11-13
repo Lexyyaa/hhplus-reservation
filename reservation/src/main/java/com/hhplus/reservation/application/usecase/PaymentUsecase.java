@@ -7,19 +7,18 @@ import com.hhplus.reservation.application.dto.ReservationInfo;
 import com.hhplus.reservation.domain.concert.ConcertService;
 import com.hhplus.reservation.domain.payment.PaymentService;
 import com.hhplus.reservation.domain.point.UserPointService;
-import com.hhplus.reservation.domain.queue.WaitingQueueRedisService;
+import com.hhplus.reservation.domain.queue.WaitingQueueService;
 import com.hhplus.reservation.domain.reserve.ReservationService;
 import com.hhplus.reservation.interfaces.dto.payment.PaymentResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class PaymentUsecase {
-    private final WaitingQueueRedisService queueService;
+    private final WaitingQueueService queueService;
     private final UserPointService userPointService;
     private final ReservationService reservationService;
     private final ConcertService concertService;
