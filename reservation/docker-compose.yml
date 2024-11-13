@@ -7,18 +7,49 @@ services:
     ports:
       - "6379:6379"  # 로컬 포트 6379와 Redis 컨테이너 포트를 연결
 
-  mysql:
+  #  mysql:
+  #    image: mysql:8.0.33
+  #    container_name: mysql_test_container
+  #    environment:
+  #      MYSQL_ROOT_PASSWORD: rootpassword
+  #      MYSQL_DATABASE: test_db
+  #      MYSQL_USER: testuser
+  #      MYSQL_PASSWORD: testpassword
+  #    ports:
+  #      - "3306:3306"  # 로컬 포트 3306과 MySQL 컨테이너 포트를 연결
+  #    volumes:
+  #      - mysql_data:/var/lib/mysql  # MySQL 데이터 영구 저장
+  #    networks:
+  #      - app-network
+  # Spring 애플리케이션용 MySQL
+  app-mysql:
     image: mysql:8.0.33
-    container_name: mysql_test_container
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: test_db
-      MYSQL_USER: testuser
-      MYSQL_PASSWORD: testpassword
+    container_name: app_mysql
     ports:
-      - "3306:3306"  # 로컬 포트 3306과 MySQL 컨테이너 포트를 연결
+      - "3307:3306"  # 로컬 포트 3307과 컨테이너 포트 3306 매핑
+    environment:
+      MYSQL_ROOT_PASSWORD: app_root_password
+      MYSQL_DATABASE: app_db
+      MYSQL_USER: app_user
+      MYSQL_PASSWORD: app_password
     volumes:
-      - mysql_data:/var/lib/mysql  # MySQL 데이터 영구 저장
+      - app_mysql_data:/var/lib/mysql  # 애플리케이션용 데이터 저장
+    networks:
+      - app-network
+
+  # 테스트용 MySQL
+  test-mysql:
+    image: mysql:8.0.33
+    container_name: test_mysql
+    ports:
+      - "3308:3306"  # 로컬 포트 3308과 컨테이너 포트 3306 매핑
+    environment:
+      MYSQL_ROOT_PASSWORD: test_root_password
+      MYSQL_DATABASE: test_db
+      MYSQL_USER: test_user
+      MYSQL_PASSWORD: test_password
+    volumes:
+      - test_mysql_data:/var/lib/mysql  # 테스트용 데이터 저장
     networks:
       - app-network
 
@@ -28,4 +59,5 @@ networks:
 
 volumes:
   redis-data:
-  mysql_data:
+  app_mysql_data:  # app-mysql에서 사용
+  test_mysql_data: # test-mysql에서 사용
