@@ -43,7 +43,6 @@ public class UserPointService {
     /**
      * 포인트를 사용한다.
      */
-    @Transactional
     public UserPointInfo payPoint(Long userId,Long price){
         UserPoint currUserPoint = userPointRepository.findByUserIdWithLock(userId);
         UserPoint.isEnoughPoint(currUserPoint,price);
