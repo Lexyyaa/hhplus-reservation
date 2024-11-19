@@ -13,11 +13,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
+@ActiveProfiles("test")
 class PaymentUsecaseTest {
 
     @Autowired
@@ -33,7 +35,6 @@ class PaymentUsecaseTest {
 
     @Test
     @DisplayName("결제 성공")
-    @Transactional
     void 결제_성공() {
         String token = "valid_token";
         Long reservationId = 1L;
@@ -48,7 +49,6 @@ class PaymentUsecaseTest {
 
     @Test
     @DisplayName("이미 결제된 예약 예외")
-    @Transactional
     void 이미_결제된_예약_예외() {
         String token = "valid_token";
         Long reservationId = 1L;
@@ -64,7 +64,6 @@ class PaymentUsecaseTest {
 
     @Test
     @DisplayName("포인트 부족 예외")
-    @Transactional
     void 포인트_부족_예외() {
         String token = "valid_token";
         Long reservationId = 2L;
@@ -78,7 +77,6 @@ class PaymentUsecaseTest {
 
     @Test
     @DisplayName("만료된 예약 예외")
-    @Transactional
     void 만료된_예약_예외() throws InterruptedException {
         String token = "valid_token";
         Long reservationId = 3L;
@@ -91,5 +89,4 @@ class PaymentUsecaseTest {
 
         assertThat(exception.getErrorType()).isEqualTo(ErrorType.PAYMENT_EXPIRED);
     }
-
 }

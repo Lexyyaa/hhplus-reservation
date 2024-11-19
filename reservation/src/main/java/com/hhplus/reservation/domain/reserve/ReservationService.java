@@ -35,7 +35,6 @@ public class ReservationService {
     /**
      * 예약정보를 반환한다.
      */
-    @Transactional
     public ReservationInfo getReservation(long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId);
         return Reservation.convert(reservation);
@@ -44,7 +43,6 @@ public class ReservationService {
     /**
      * 예약을 확정한다.
      */
-    @Transactional
     public ReservationInfo confirmedReservation(ReservationInfo reservation){
         Reservation saveReservation = reservationRepository.confirmedReservationWithLock(reservation.getId());
         return Reservation.convert(saveReservation);

@@ -73,6 +73,6 @@ public class WaitingQueueService {
      */
     @Transactional
     public boolean deleteToken(String token){
-       return waitingQueueRedisRepository.deleteToken(token);
+        return waitingQueueRedisRepository.deleteToken(token);
     }
 }

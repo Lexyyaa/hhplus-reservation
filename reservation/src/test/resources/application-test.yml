@@ -3,10 +3,16 @@ spring:
     hibernate:
       ddl-auto: create-drop
     properties:
-      hibernate.dialect: org.hibernate.dialect.MySQLDialect  # Hibernate 설정만 남겨둠
+      hibernate.dialect: org.hibernate.dialect.H2Dialect  # H2에 맞는 Dialect 설정
   sql:
     init:
-      mode: never
+      mode: always
+      schema-locations: classpath:/init/data.sql # 초기화 스크립트 경로
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=MYSQL;DB_CLOSE_DELAY=-1;INIT=SET NAMES UTF8
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
 logging:
   level:
     root: INFO
