@@ -60,6 +60,9 @@ dependencies {
     testImplementation 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    implementation 'org.springframework.kafka:spring-kafka'
+    testImplementation 'org.testcontainers:kafka:1.19.1'
 }
 
 tasks.named('test') {
