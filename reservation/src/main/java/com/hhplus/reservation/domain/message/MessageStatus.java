@@ -1,5 +1,5 @@
 package com.hhplus.reservation.domain.message;
 
 public enum MessageStatus {
-    INIT, PUBLISHED
+    INIT, PUBLISHED, FAIL
 }
