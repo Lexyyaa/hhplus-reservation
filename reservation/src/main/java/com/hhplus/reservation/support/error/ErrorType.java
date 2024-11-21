@@ -37,7 +37,10 @@ public enum ErrorType {
     INVALID_PAYMENT_AMOUNT(ErrorCode.VALIDATION_ERROR, "결제 금액이 올바르지 않습니다.", LogLevel.WARN),
     PAYMENT_ALREADY_MADE(ErrorCode.CONFLICT_ERROR, "이미 결제된 예약입니다.", LogLevel.WARN),
     PAYMENT_EXPIRED(ErrorCode.SERVER_ERROR, "결제 시간이 초과되었습니다.", LogLevel.WARN),
-    INVALID_PAYMENT_TOKEN(ErrorCode.UNAUTHORIZED_ERROR, "유효하지 않은 결제 토큰입니다.", LogLevel.WARN);
+    INVALID_PAYMENT_TOKEN(ErrorCode.UNAUTHORIZED_ERROR, "유효하지 않은 결제 토큰입니다.", LogLevel.WARN),
+
+    // 아웃박스 관련오류
+    OUTBOX_NOT_FOUND(ErrorCode.NOT_FOUND, "메시지아웃박스를 찾을 수 없습니다.", LogLevel.WARN);
 
     private final ErrorCode errorCode;
     private final String message;
