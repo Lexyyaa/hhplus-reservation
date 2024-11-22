@@ -63,12 +63,6 @@ public class KafkaConfig {
         factory.setConsumerFactory(consumerFactory());
         return factory;
     }
-
-    // NewTopic 설정 (필요 시 추가)
-    @Bean
-    public NewTopic newTopic() {
-        return new NewTopic("payment", 3, (short) 1); // 파티션 3개, 복제본 1개
-    }
 }
 
 
