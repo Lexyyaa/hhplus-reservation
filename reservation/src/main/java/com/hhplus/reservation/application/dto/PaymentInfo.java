@@ -19,8 +19,9 @@ public class PaymentInfo {
     Long price;
     LocalDateTime paidAt;
 
-    public static PaymentResponse convert(Long userId, String title, Long price){
+    public static PaymentResponse convert(Long id,Long userId, String title, Long price){
         return PaymentResponse.builder()
+                .id(id)
                 .userId(userId)
                 .concertTitle(title)
                 .performDate(LocalDate.now())
