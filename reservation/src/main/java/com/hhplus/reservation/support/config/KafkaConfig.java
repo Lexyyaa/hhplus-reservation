@@ -1,5 +1,6 @@
 package com.hhplus.reservation.support.config;
 
+import com.hhplus.reservation.domain.payment.PaymentEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
