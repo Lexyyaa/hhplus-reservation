@@ -1,6 +1,8 @@
 package com.hhplus.reservation.support.config;
 
 
+import com.hhplus.reservation.domain.message.KafkaMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -17,6 +19,7 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @EnableKafka
 @Configuration
 public class KafkaConfig {
@@ -27,9 +30,8 @@ public class KafkaConfig {
         return config;
     }
 
-    // Consumer 설정
     @Bean
-    public ConsumerFactory<String, Object> consumerFactory() {
+    public ConsumerFactory<String, KafkaMessage> consumerFactory() {
         Map<String, Object> config = new HashMap<>(commonConfig());
 
         config.put(ConsumerConfig.GROUP_ID_CONFIG, "test-group");
@@ -39,17 +41,16 @@ public class KafkaConfig {
         config.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
         config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
-        return new DefaultKafkaConsumerFactory<>(config);
+        return new DefaultKafkaConsumerFactory<>(config, new StringDeserializer(), new JsonDeserializer<>(KafkaMessage.class));
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
+    public ConcurrentKafkaListenerContainerFactory<String, KafkaMessage> kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, KafkaMessage> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         return factory;
     }
 
-    // Producer 설정
     @Bean
     public ProducerFactory<String, Object> producerFactory() {
         Map<String, Object> config = new HashMap<>(commonConfig());
@@ -62,6 +63,7 @@ public class KafkaConfig {
 
     @Bean
     public KafkaTemplate<String, Object> kafkaTemplate() {
+        log.info("KafkaTemplate 빈 생성 중...");
         return new KafkaTemplate<>(producerFactory());
     }
 
@@ -70,5 +72,6 @@ public class KafkaConfig {
         return new NewTopic("payment", 3, (short) 1);
     }
 }
+
 
 
