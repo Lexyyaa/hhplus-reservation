@@ -27,8 +27,7 @@ public class MessageOutbox extends Timestamped {
     private Long eventId;
 
     @Column(name = "event_type", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private PaymentEvent.EventType eventType;
+    private String eventType;
 
     @Column(name = "domain_name")
     private String domainName;

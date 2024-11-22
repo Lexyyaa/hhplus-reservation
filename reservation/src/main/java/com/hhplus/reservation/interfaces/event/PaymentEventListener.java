@@ -24,10 +24,11 @@ public class PaymentEventListener {
 
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void saveMessageOutbox(PaymentEvent.DeleteToken event) {
+
         try{
             MessageOutbox message = MessageOutbox.builder()
                     .eventId(event.getMessageKey())
-                    .eventType(PaymentEvent.EventType.DELETE_TOKEN)
+                    .eventType(PaymentEvent.EventType.DELETE_TOKEN.name())
                     .domainName("payment")
                     .topic("payment-completed-event-v1")
                     .payload(objectMapper.writeValueAsString(event))

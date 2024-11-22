@@ -18,7 +18,7 @@ class MessageOutboxTest {
         // Given
         MessageOutbox messageOutbox = MessageOutbox.builder()
                 .eventId(123L)
-                .eventType(PaymentEvent.EventType.DELETE_TOKEN)
+                .eventType(PaymentEvent.EventType.DELETE_TOKEN.name())
                 .domainName("Payment")
                 .topic("payment-topic")
                 .payload("{\"amount\":1000}")
@@ -39,7 +39,7 @@ class MessageOutboxTest {
         // Given
         MessageOutbox messageOutbox = MessageOutbox.builder()
                 .eventId(123L)
-                .eventType(PaymentEvent.EventType.DELETE_TOKEN)
+                .eventType(PaymentEvent.EventType.DELETE_TOKEN.name())
                 .domainName("Payment")
                 .topic("payment-topic")
                 .payload("{\"amount\":1000}")
