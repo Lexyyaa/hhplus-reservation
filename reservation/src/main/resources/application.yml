@@ -6,14 +6,25 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: app_user
     password: app_password
+  sql:
+    init:
+      mode: never
   jpa:
-    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: update
   data:
     redis:
       host: localhost
       port: 6379
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      auto-offset-reset: earliest
 logging:
   level:
+    root: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     org.apache.kafka: INFO
 server:
   servlet:
