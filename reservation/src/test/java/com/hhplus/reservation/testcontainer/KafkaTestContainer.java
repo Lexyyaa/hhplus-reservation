@@ -31,5 +31,11 @@ public abstract class KafkaTestContainer {
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
         consumer.subscribe(Collections.singletonList(topic));
         return consumer;
+        System.setProperty("spring.kafka.bootstrap-servers", KAFKA_CONTAINER.getBootstrapServers());
+    }
+
+    @AfterAll
+    public static void stopContainer() {
+        KAFKA_CONTAINER.stop();
     }
 }
