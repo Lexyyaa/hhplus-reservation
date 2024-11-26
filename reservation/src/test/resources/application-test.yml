@@ -4,20 +4,6 @@ spring:
       ddl-auto: none
   sql:
     init:
-<<<<<<< Updated upstream
-      mode: never
-#    properties:
-#      hibernate.dialect: org.hibernate.dialect.H2Dialect  # H2에 맞는 Dialect 설정
-#  sql:
-#    init:
-#      mode: never
-#      schema-locations: classpath:/init/data.sql # 초기화 스크립트 경로
-#  datasource:
-#    url: jdbc:h2:mem:testdb;MODE=MYSQL;DB_CLOSE_DELAY=-1;INIT=SET NAMES UTF8
-#    driver-class-name: org.h2.Driver
-#    username: sa
-#    password: ""
-=======
       mode: always
       schema-locations: classpath:/init/data.sql # 초기화 스크립트 경로
   datasource:
@@ -25,7 +11,6 @@ spring:
     driver-class-name: org.h2.Driver
     username: sa
     password: ""
->>>>>>> Stashed changes
   kafka:
     consumer:
       auto-offset-reset: earliest
