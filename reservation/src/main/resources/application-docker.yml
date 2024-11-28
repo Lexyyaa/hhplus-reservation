@@ -10,3 +10,16 @@ spring:
       port: 6379
   kafka:
     bootstrap-servers: kafka:9092
+#  task:
+#    execution:
+#      pool:
+#        core-size: 10       # 최소 Thread 수
+#        max-size: 20        # 최대 Thread 수
+#        queue-capacity: 50  # Thread Queue 크기
+#  jpa:
+#    hibernate:
+#      jdbc:
+#        batch_size: 50      # Hibernate Batch 처리 크기 조정
+logging:
+  level:
+    root: info
