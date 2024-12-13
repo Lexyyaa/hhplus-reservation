@@ -1,23 +1,12 @@
 spring:
   application:
     name: reservation
-  datasource:
-    url: jdbc:mysql://localhost:3307/app_db
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: app_user
-    password: app_password
-  sql:
-    init:
-      mode: never
   jpa:
     hibernate:
       ddl-auto: update
-  data:
-    redis:
-      host: localhost
-      port: 6379
+    properties:
+      hibernate.dialect: org.hibernate.dialect.MySQL8Dialect
   kafka:
-    bootstrap-servers: localhost:9092
     consumer:
       auto-offset-reset: earliest
 logging:

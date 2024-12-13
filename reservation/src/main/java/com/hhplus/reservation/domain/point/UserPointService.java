@@ -4,11 +4,8 @@ import com.hhplus.reservation.application.dto.UserPointInfo;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
-
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -16,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 public class UserPointService {
 
     private final UserPointRepository userPointRepository;
-    private final RedissonClient redissonClient;
+//    private final RedissonClient redissonClient;
 
     /**
      * 포인트를 충전한다

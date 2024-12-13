@@ -18,7 +18,7 @@ import java.util.Map;
 @EnableKafka
 public class KafkaConfig {
 
-    @Value("${spring.kafka.bootstrap-servers}") // 이거 저짝에서 가져와야하는디
+    @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
     // 공통 설정
